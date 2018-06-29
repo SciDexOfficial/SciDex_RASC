@@ -2,7 +2,7 @@ pragma solidity ^0.4.23;
 
 contract RASC_Access {
     //basic access 
-    struct Access {
+    struct BasicAccess {
         uint accessType;
         uint minValue;
         uint maxValue;
