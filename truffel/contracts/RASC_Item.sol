@@ -5,5 +5,7 @@ contract RASC_Item {
     struct Item {
         address owner;
         bytes data;
+        uint price;
     }
+    Item[] items;
 }
