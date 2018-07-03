@@ -11,4 +11,9 @@ contract RASC_ItemsGroup is RASC_Item, RASC_Access {
         BasicAccess[] access;
     }
     ItemsGroup[] itemsGroups;
+
+    function getItemsGroup(uint index) internal view returns(ItemsGroup) {
+        require(itemsGroups.length > index);
+        return itemsGroups[index];
+    }
 }
