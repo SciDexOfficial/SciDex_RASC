@@ -35,7 +35,15 @@ contract RASC_Transaction is RASC_ItemsGroup {
         require(buyer != seller);
         require(msg.sender != buyer);
         require(msg.sender != seller);
-        Transaction memory transaction = Transaction(msg.sender, buyer, seller, groupIndex, TransactionStatus.created, now, now);
+        Transaction memory transaction = Transaction(
+            msg.sender, 
+            buyer, 
+            seller, 
+            groupIndex, 
+            TransactionStatus.created, 
+            now, 
+            now
+            );
         uint index = transactions.push(transaction) - 1;
         sellersTransactions[seller].push(index);
         buyersTransactions[buyer].push(index);
