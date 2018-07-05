@@ -33,10 +33,18 @@ contract RASC_ItemsGroup is RASC_Item, RASC_Access {
     function addGroupAccess() {
 
     }
-    function deleteAccess() {
+    function deleteAccess(uint groupIndex) {
 
     }
-    function updateAccess() {
-        
+    function updateAccess(uint groupIndex, uint accessIndex) {
+
+    }
+    function getGroupAccessCount(uint index) public view returns(uint) {
+        return groupsAccess[index].length;
+    }
+    
+    function getGroupAccess(uint groupIndex, uint accessIndex) public view returns(uint, uint, uint , uint) {
+        BasicAccess memory access = groupsAccess[groupIndex][accessIndex];
+        return (access.userFieldType, access.minValue, access.maxValue, access.multiplier);
     }
 }
