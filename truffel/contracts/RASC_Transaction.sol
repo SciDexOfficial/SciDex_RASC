@@ -3,7 +3,10 @@ pragma solidity ^0.4.23;
 import "./RASC_ItemsGroup.sol";
 
 contract RASC_Transaction is RASC_ItemsGroup {
-    enum TransactionStatus {created, canceled}
+    enum TransactionStatus {created, canceled, confirmed}
+    //events
+    event TransactionChangedStatus(uint transactionIndex, TransactionStatus status, address executer);
+    event TransactingCreated(uint transactionIndex);
     //item transaction from seller to buyer
     struct Transaction {
         address arbiter;
@@ -47,14 +50,22 @@ contract RASC_Transaction is RASC_ItemsGroup {
         uint index = transactions.push(transaction) - 1;
         sellersTransactions[seller].push(index);
         buyersTransactions[buyer].push(index);
+        
+        emit TransactingCreated(index);
+        
         return index;
     }
-    // function confirmTransaction(uint transactionId) public pure onlyArbiter(transactionId) {
+    function confirmTransaction(uint transactionIndex) public onlyArbiter(transactionIndex) {
+        //TODO: check if user can confirm
+        transactions[transactionIndex].status = TransactionStatus.confirmed;
 
-    // }
+        emit TransactionChangedStatus(transactionIndex, TransactionStatus.confirmed, msg.sender);
+    }
     function cancelTransaction(uint transactionIndex) public onlyArbiter(transactionIndex) {
         Transaction storage transaction = transactions[transactionIndex];
         transaction.status = TransactionStatus.canceled;
+
+        emit TransactionChangedStatus(transactionIndex, TransactionStatus.canceled, msg.sender);
     }
 
     function getTransaction(uint index) internal view returns(Transaction memory transaction) {
@@ -66,14 +77,13 @@ contract RASC_Transaction is RASC_ItemsGroup {
     }
     function getTransactionInfo(uint index) public view returns(address, address, address, TransactionStatus, uint, uint, uint[]) {
         Transaction memory transaction = getTransaction(index);
-        ItemsGroup memory group = getItemsGroup(transaction.itemsGroupIndex);
         return (transaction.arbiter, 
             transaction.buyer, 
             transaction.seller, 
             transaction.status, 
             transaction.createDate, 
             transaction.updateDate, 
-            group.itemsIndexies
+            groupsItems[transaction.itemsGroupIndex]
             );
     } 
     function getTransactionStatus(uint index) public view returns(TransactionStatus) {
@@ -82,7 +92,6 @@ contract RASC_Transaction is RASC_ItemsGroup {
     }
     function getTransactionItems(uint index) public view returns(uint[]) {
         Transaction memory transaction = getTransaction(index);
-        ItemsGroup memory group = getItemsGroup(transaction.itemsGroupIndex);
-        return group.itemsIndexies;
+        return groupsItems[transaction.itemsGroupIndex];
     }
 }
