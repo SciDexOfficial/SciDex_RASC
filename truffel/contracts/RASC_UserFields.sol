@@ -3,6 +3,10 @@ pragma solidity ^0.4.23;
 import "./Ownable.sol";
 
 contract RASC_UserFields is Ownable {
+    //events
+
+    event FieldTypeCreated(uint fieldIndex, string description);
+
     //basic dictionary to convert user's fields value to general view
     struct UserFieldValue {
         uint intValue;
@@ -43,8 +47,9 @@ contract RASC_UserFields is Ownable {
     }
 
     //add new field type
-    function addFieldType(string description) public onlyOwner returns(uint) {
-        uint index = usersFieldsDescription.push(description) - 1;
-        return index;
+    function addFieldType(string description) public onlyOwner returns(uint index) {
+        index = usersFieldsDescription.push(description) - 1;
+        
+        emit FieldTypeCreated(index, description);
     }
 }
