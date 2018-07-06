@@ -1,6 +1,9 @@
 pragma solidity ^0.4.23;
 
 contract RASC_Item {
+    //events
+    ItemCreated(uint itemIndex);
+
     //basic data item
     struct Item {
         string data;
@@ -14,5 +17,7 @@ contract RASC_Item {
         Item memory item = Item(data, price);
         index = items.push(item) - 1;
         itemsOwners[index].push(msg.sender);
+
+        emit ItemCreated(index);
     }
 }
