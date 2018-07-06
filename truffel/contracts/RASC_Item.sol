@@ -2,7 +2,7 @@ pragma solidity ^0.4.23;
 
 contract RASC_Item {
     //events
-    ItemCreated(uint itemIndex);
+    event ItemCreated(uint itemIndex);
 
     //basic data item
     struct Item {
