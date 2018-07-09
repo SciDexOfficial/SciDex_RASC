@@ -41,7 +41,7 @@ contract RASC_ItemsGroup is RASC_Item, RASC_Access {
         BasicAccess memory access = BasicAccess(fieldType, minValue, maxValue, multiplier);
         groupsAccess[groupIndex].push(access);
     }
-    function deleteAccess(uint groupIndex) public onlyGroupOwner(groupIndex) {
+    function deleteAccess(uint groupIndex) public view onlyGroupOwner(groupIndex) {
         //remove all access objects
     }
     function updateAccess(uint groupIndex, uint accessIndex, uint fieldType, uint minValue, uint maxValue, uint multiplier) public onlyGroupOwner(groupIndex) {
