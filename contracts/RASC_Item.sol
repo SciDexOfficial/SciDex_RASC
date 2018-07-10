@@ -20,4 +20,10 @@ contract RASC_Item {
 
         emit ItemCreated(index);
     }
+    
+    function getItem(uint index) public view returns(string data, uint price) {
+        Item memory item = items[index];
+        data = item.data;
+        price = item.price;
+    }
 }

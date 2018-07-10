@@ -38,6 +38,12 @@ contract RASC_User {
         emit UserCreated(index, name, msg.sender);
     }
  
+    function getUserInfo(uint index) public view returns(string memory name, address wallet) {
+        User memory user = users[index];
+        name = user.name;
+        wallet = user.wallet;
+    }
+
     //return user from address if exist
     function getUser(address userAddress) internal view returns(User) {
         uint userId = getUserIndex(userAddress);
