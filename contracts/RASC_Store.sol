@@ -36,5 +36,56 @@ contract RASC_Store is RASC_Transaction, RASC_User {
         uint value = getValueForAccessType(userIndex, access.userFieldType).mul(access.multiplier);
         return ((value >= access.minValue) && (value <= access.maxValue));
         
-    }    
+    }  
+
+    //
+    function buyItemGroup(uint groupIndex) public payable {
+        ItemsGroup memory group = itemsGroups[groupIndex];
+        //check if user can buy this group
+        require(group.price <= msg.value, "Incorrect 'value'");
+
+        for (uint i = 0; i < groupsItems[groupIndex].length; i++) {
+            giveAccessToItemData(groupsItems[groupIndex][i], msg.sender);
+        }
+        uint rest = msg.value - group.price;
+        if (rest > 0) {
+            msg.sender.transfer(rest);
+        }
+        
+    }  
+    //
+    function haveMeAccessToItemData(uint index) public view returns(bool) {
+        return checkUserHasAccessToItemData(index, msg.sender);
+    }
+    function getCreatedItems() public view returns(uint[] memory result) {
+        uint[] memory tempData = new uint[](items.length);
+        uint count = 0;
+        for (uint i = 0; i < items.length; i++) {
+            for (uint j = 0; j < itemsOwners[i].length; j++) {
+                if (itemsOwners[i][j] == msg.sender) {
+                    tempData[count] = i;
+                    count++;
+                } 
+            }
+        }
+        result = new uint[](count);
+        for (uint ii = 0; ii < count; ii++) {
+            result[ii] = tempData[ii];
+        }
+    }
+
+    function getBoughtItems() public view returns(uint[] memory result) {
+        uint[] memory tempData = new uint[](items.length);
+        uint count = 0;
+        for (uint i = 0; i < items.length; i++) {
+            if (checkUserHasAccessToItemData(i, msg.sender)) {
+                tempData[count] = i;
+                count++;
+            } 
+        }
+        result = new uint[](count);
+        for (uint ii = 0; ii < count; ii++) {
+            result[ii] = tempData[ii];
+        }
+    }
 }

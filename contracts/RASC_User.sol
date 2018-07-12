@@ -34,6 +34,7 @@ contract RASC_User {
         
         User memory user = User(name, msg.sender);
         index = users.push(user) - 1;
+        usersIndexies[msg.sender] = index;
 
         emit UserCreated(index, name, msg.sender);
     }
@@ -56,6 +57,9 @@ contract RASC_User {
         //check if user exist
         require(users.length > userId);
         return userId;
+    }
+    function getMyIndex() public view returns(uint index) {
+        index = getUserIndex(msg.sender);
     }
     //get value for current field type
     function getValueForAccessType(uint userId, uint fieldType) internal view returns(uint) {

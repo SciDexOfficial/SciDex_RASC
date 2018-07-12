@@ -49,7 +49,10 @@ contract RASC_UserFields is Ownable {
     //add new field type
     function addFieldType(string description) public onlyOwner returns(uint index) {
         index = usersFieldsDescription.push(description) - 1;
-        
         emit FieldTypeCreated(index, description);
+    }
+
+    function getOwner() public view returns(address){
+        return owner;
     }
 }
