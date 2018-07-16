@@ -14,7 +14,6 @@ contract RASC_Store is RASC_Transaction, RASC_User {
         uint groupsFilteringCount = 0;
         uint userIndex = getUserIndex(msg.sender);
         for (uint i = 0; i < groupsCount; i++) {
-
             if (hasAccess(userIndex, i) == true){
                 indexes[groupsFilteringCount] = i;
                 groupsFilteringCount++;
@@ -24,8 +23,11 @@ contract RASC_Store is RASC_Transaction, RASC_User {
     //check if user has access to itemsGroup
     function hasAccess(uint userIndex, uint groupIndex) internal view returns(bool) {
         uint accessCount = groupsAccess[groupIndex].length;
+        if (accessCount == 0) {
+            return true;
+        } 
         for (uint i = 0; i < accessCount; i++){
-            if (checkUserAccess(userIndex, groupsAccess[groupIndex][i]) == false){
+            if (checkUserAccess(userIndex, groupsAccess[groupIndex][i]) == false) {
                 return false;
             }
         }
