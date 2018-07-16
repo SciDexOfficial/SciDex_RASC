@@ -74,5 +74,4 @@ contract RASC_ItemsGroup is RASC_Item, RASC_Access {
         BasicAccess memory access = groupsAccess[groupIndex][accessIndex];
         return (access.userFieldType, access.minValue, access.maxValue, access.multiplier);
     }
-    
 }

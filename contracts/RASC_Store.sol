@@ -54,7 +54,7 @@ contract RASC_Store is RASC_Transaction, RASC_User {
         
     }  
     //
-    function haveMeAccessToItemData(uint index) public view returns(bool) {
+    function checkMyAccessToItemData(uint index) public view returns(bool) {
         return checkUserHasAccessToItemData(index, msg.sender);
     }
     function getCreatedItems() public view returns(uint[] memory result) {
