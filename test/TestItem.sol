@@ -9,18 +9,18 @@ contract TestItem {
         RASC_Item item = RASC_Item(DeployedAddresses.RASC_Item());
         uint index = item.createItem("tttt", 12);
         uint price;
+        bool isOwner;
         string memory data;
-        (data, price) = item.getItem(index);
+        (data, price, isOwner) = item.getItemInfo(index);
         Assert.equal(price, 12, "expected 12");
-        Assert.equal(data, "tttt", "expected 'tttt'");
     }
     function test2() public {
         RASC_Item item = RASC_Item(DeployedAddresses.RASC_Item());
         uint index = item.createItem("aaaa", 1);
         uint price;
         string memory data;
-        (data, price) = item.getItem(index);
-        Assert.equal(price, 1, "expected 12");
-        Assert.equal(data, "aaaa", "expected 'aaaa'");
+        bool isOwner;
+        (data, price, isOwner) = item.getItemInfo(index);
+        Assert.equal(price, 1, "expected 1");
     }
 }
