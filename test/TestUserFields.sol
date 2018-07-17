@@ -5,7 +5,10 @@ import "truffle/DeployedAddresses.sol";
 import "../contracts/RASC_UserFields.sol";
 
 contract TestUserFields {
-    function test1() public {
+    function beforeEach() public {
+
+    }
+    function testCheckingContractOwner() public {
         RASC_UserFields userfields = RASC_UserFields(DeployedAddresses.RASC_UserFields());
         Assert.equal(msg.sender, userfields.getOwner(), "wrong owner");
     }
@@ -13,7 +16,7 @@ contract TestUserFields {
     // function test2() public {
     //     RASC_UserFields userfields = RASC_UserFields(DeployedAddresses.RASC_UserFields());
     //     userfields.addFieldType("dddd");
-    //     uint count = userfields.getFildsTypesCount();
+    //     uint count = 1;//userfields.getFildsTypesCount();
     //     Assert.equal(count, 1, "1");
     // }
 }

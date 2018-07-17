@@ -6,25 +6,24 @@ import "../contracts/RASC_User.sol";
 
 contract TestUser {
 
-    function test0() public {
+    function testCreatingUser() public {
         RASC_User user = RASC_User(DeployedAddresses.RASC_User());
-        // user.createUser("1");
-        uint index = user.createUser("2");
+        uint index = user.createUser("username");
         string memory name;
         address wallet;
         (name, wallet) = user.getUserInfo(index);
-        Assert.equal(name, "2", "expected '2'");
+        Assert.equal(name, "username", "expected 'username'");
     }
 
-    function test1() public {
+    function testCheckingUserName() public {
         RASC_User user = RASC_User(DeployedAddresses.RASC_User());
         string memory name;
         address wallet;
         (name, wallet) = user.getUserInfo(0);
-        Assert.equal(name, "2", "expected '2'");
+        Assert.equal(name, "username", "expected 'username'");
     }
 
-    function test2() public {
+    function testGetingUserIndex() public {
         RASC_User user = RASC_User(DeployedAddresses.RASC_User());
         uint index = 100;
         index = user.getMyIndex();
