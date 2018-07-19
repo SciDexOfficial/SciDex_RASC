@@ -1,8 +1,10 @@
 pragma solidity ^0.4.23;
 
-import "./Ownable.sol";
+// import "./Ownable.sol";
 
-contract RASC_UserFields is Ownable {
+contract RASC_UserFields {
+    address public owner;
+    
     //events
 
     event FieldTypeCreated(uint fieldIndex, string description);
@@ -22,6 +24,10 @@ contract RASC_UserFields is Ownable {
     //value: description
     string[] usersFieldsDescription;
 
+    constructor() public{
+        owner = msg.sender;
+    }
+
     //get description for field value
     function getFieldValueDescription(uint fieldType, uint value) public view returns(uint, string) {
         UserFieldValue memory fieldValue = usersFieldsValueDictionary[fieldType][value];
@@ -39,7 +45,8 @@ contract RASC_UserFields is Ownable {
     
     //only contract owner
     //add new value descriptions
-    function setFieldValueDescription(uint fieldType, uint value, uint intValue, string stringValue) public onlyOwner {
+    function setFieldValueDescription(uint fieldType, uint value, uint intValue, string stringValue) public {
+        require(msg.sender == owner);
         require(usersFieldsDescription.length > fieldType);
         UserFieldValue storage field = usersFieldsValueDictionary[fieldType][value];
         field.intValue = intValue;
@@ -47,12 +54,13 @@ contract RASC_UserFields is Ownable {
     }
 
     //add new field type
-    function addFieldType(string description) public onlyOwner returns(uint index) {
+    function addFieldType(string description) public returns(uint index) {
+        require(msg.sender == owner);
         index = usersFieldsDescription.push(description) - 1;
         emit FieldTypeCreated(index, description);
     }
 
-    function getOwner() public view returns(address){
+    function getOwner() public view returns(address) {
         return owner;
     }
 }
