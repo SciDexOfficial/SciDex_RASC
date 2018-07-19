@@ -54,10 +54,11 @@ contract RASC_UserFields {
     }
 
     //add new field type
-    function addFieldType(string description) public returns(uint index) {
+    function addFieldType(string description) public returns(uint) {
         require(msg.sender == owner);
-        index = usersFieldsDescription.push(description) - 1;
+        uint index = usersFieldsDescription.push(description) - 1;
         emit FieldTypeCreated(index, description);
+        return index;
     }
 
     function getOwner() public view returns(address) {
