@@ -21,6 +21,10 @@ contract RASC_UserFields {
     mapping (uint => mapping(uint => UserFieldValue)) usersFieldsValueDictionary;
     
     //key: field type
+    //value: array of all posible values
+    mapping (uint => uint[]) usersFieldsValues;
+
+    //key: field type
     //value: description
     string[] usersFieldsDescription;
 
@@ -49,8 +53,13 @@ contract RASC_UserFields {
         require(msg.sender == owner);
         require(usersFieldsDescription.length > fieldType);
         UserFieldValue storage field = usersFieldsValueDictionary[fieldType][value];
+        usersFieldsValues[fieldType].push(value);
         field.intValue = intValue;
         field.stringValue = stringValue;
+    }
+
+    function getAllFiledsValues(uint fieldType) public view returns(uint[] memory values) {
+        values = usersFieldsValues[fieldType];
     }
 
     //add new field type
