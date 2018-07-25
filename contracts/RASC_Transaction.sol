@@ -1,8 +1,8 @@
 pragma solidity ^0.4.23;
 
-import "./RASC_ItemsGroup.sol";
+import "./RASC_Item.sol";
 
-contract RASC_Transaction is RASC_ItemsGroup {
+contract RASC_Transaction is RASC_Item {
     enum TransactionStatus {created, canceled, confirmed}
     //events
     event TransactionChangedStatus(uint transactionIndex, TransactionStatus status, address executer);
@@ -12,11 +12,13 @@ contract RASC_Transaction is RASC_ItemsGroup {
         address arbiter;
         address buyer;
         address seller;
-        uint itemsGroupIndex;
+        uint itemIndex;
         TransactionStatus status;
         uint createDate;
         uint updateDate;
     }
+    //transaction categories
+    mapping(uint => mapping(uint => uint[])) transactionsCategories;
     //store all transactions
     Transaction[] transactions;
 
@@ -32,17 +34,25 @@ contract RASC_Transaction is RASC_ItemsGroup {
         _;
     }
     
-    function createTransaction(address buyer, address seller, uint groupIndex) internal returns(uint) {
+    function createTransaction(
+        address buyer, 
+        address seller, 
+        address arbiter, 
+        uint itemIndex, 
+        uint[] memory categories, 
+        uint[] memory subcategories) internal returns(uint) 
+        {
+        require(categories.length == subcategories.length);
         require(buyer != address(0));
         require(seller != address(0));
         require(buyer != seller);
         require(msg.sender != buyer);
         require(msg.sender != seller);
         Transaction memory transaction = Transaction(
-            msg.sender, 
+            arbiter, 
             buyer, 
             seller, 
-            groupIndex, 
+            itemIndex, 
             TransactionStatus.created, 
             now, 
             now
@@ -51,9 +61,44 @@ contract RASC_Transaction is RASC_ItemsGroup {
         sellersTransactions[seller].push(index);
         buyersTransactions[buyer].push(index);
         
+        for (uint i = 0; i < categories.length; i++) {
+            if (transactionsCategories[index][categories[i]].contains(subcategories[i]) == false) {
+                transactionsCategories[index][categories[i]].push(subcategories[i]);
+            }
+        }
+
         emit TransactingCreated(index);
         
         return index;
+    }
+    function payTransaction(uint transactionIndex) payable public {
+        uint[] memory values;
+        uint[] memory valuesKeys;
+        (values, valuesKeys) = convertTransactionCategoriesToArray(transactionIndex);
+    }
+    function convertTransactionCategoriesToArray(uint index) private returns(uint[] memory values, uint[] memory valuesKeys) {
+        uint subcategoriesCount;
+        uint categoriesCount;
+        (categoriesCount, subcategoriesCount) = getTransactionSubcategoriesCount(index);
+        values = new uint[](subcategoriesCount);
+        valuesKeys = new uint[](subcategoriesCount);
+        uint key = 0;
+        for (uint i = 0; i < categoriesCount; i++) {
+            uint transactionsSubcategoriesCount = transactionsCategories[index][i].length;
+            for (uint j = 0; j < transactionsSubcategoriesCount; j++) {
+                values[key] = transactionsCategories[index][i][j];
+                valuesKeys[key] = i;
+                key++;
+            }
+        }
+    }
+    function getTransactionSubcategoriesCount(uint transactionIndex) private returns(uint categoriesCount, uint count) {
+        count = 0;
+        Transaction memory transaction = transactions[transactionIndex];
+        categoriesCount = itemsCategories[transaction.itemIndex].length;
+        for (uint i = 0; i < categoriesCount; i++) {
+            count += transactionsCategories[transactionIndex][i].length;
+        }
     }
     function confirmTransaction(uint transactionIndex) public onlyArbiter(transactionIndex) {
         //TODO: check if user can confirm
@@ -75,7 +120,7 @@ contract RASC_Transaction is RASC_ItemsGroup {
     function getTransactionsCount() public view returns(uint) {
         return transactions.length;
     }
-    function getTransactionInfo(uint index) public view returns(address, address, address, TransactionStatus, uint, uint, uint[]) {
+    function getTransactionInfo(uint index) public view returns(address, address, address, TransactionStatus, uint, uint, uint) {
         Transaction memory transaction = getTransaction(index);
         return (transaction.arbiter, 
             transaction.buyer, 
@@ -83,15 +128,18 @@ contract RASC_Transaction is RASC_ItemsGroup {
             transaction.status, 
             transaction.createDate, 
             transaction.updateDate, 
-            groupsItems[transaction.itemsGroupIndex]
+            transaction.itemIndex
             );
     } 
     function getTransactionStatus(uint index) public view returns(TransactionStatus) {
         Transaction memory transaction = getTransaction(index);
         return transaction.status;
     }
-    function getTransactionItems(uint index) public view returns(uint[]) {
+    function getTransactionItemIndex(uint index) public view returns(uint) {
         Transaction memory transaction = getTransaction(index);
-        return groupsItems[transaction.itemsGroupIndex];
+        return transaction.itemIndex;
+    }
+    function getTransactionCategories(uint transactionIndex) public view returns(uint[], uint[]) {
+
     }
 }

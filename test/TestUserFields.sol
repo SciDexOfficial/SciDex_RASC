@@ -12,11 +12,4 @@ contract TestUserFields {
         RASC_UserFields userfields = RASC_UserFields(DeployedAddresses.RASC_UserFields());
         Assert.equal(msg.sender, userfields.getOwner(), "wrong owner");
     }
-
-    // function test2() public {
-    //     RASC_UserFields userfields = RASC_UserFields(DeployedAddresses.RASC_UserFields());
-    //     userfields.addFieldType("dddd");
-    //     uint count = userfields.getFildsTypesCount();
-    //     Assert.equal(count, 1, "1");
-    // }
 }
