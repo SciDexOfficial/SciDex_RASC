@@ -38,6 +38,14 @@ contract RASC_Store is RASC_Transaction, RASC_User {
 
         nextPageIndex = to;
     }
+
+    function getBoughtItems() public view returns(uint[] memory result) {
+        result = usersItemsAccess[msg.sender];
+    }
+
+    function getCreatedItems() public view returns(uint[] memory result) {
+        result = usersItems[msg.sender];
+    }
     //return all items availabel for sender
     // function getItemsGroupIds() public view returns(uint[] memory indexes) {
     //     uint groupsCount = itemsGroups.length;

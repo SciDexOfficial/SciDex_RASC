@@ -16,7 +16,7 @@ module.exports = function(deployer) {
   deployer.deploy(RASC_UserFields);
   deployer.deploy(RASC_User);
   deployer.deploy(RASC_Item);
-  deployer.deploy(RASC_ItemsGroup);
+  // deployer.deploy(RASC_ItemsGroup);
   deployer.deploy(RASC_Transaction);
   deployer.deploy(RASC_Store);
 };

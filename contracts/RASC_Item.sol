@@ -103,7 +103,7 @@ contract RASC_Item {
         count = items.length;
     }
 
-    function getItem(uint index) public view returns(string memory data, uint price, address seller) {
+    function getItemInfo(uint index) public view returns(string memory data, uint price, address seller) {
         require(items.length > index);
         Item memory item = items[index];
         data = "";
