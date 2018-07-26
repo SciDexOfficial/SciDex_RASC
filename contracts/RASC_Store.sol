@@ -8,11 +8,13 @@ contract RASC_Store is RASC_Transaction, RASC_User {
     using SafeMath for uint;
 
     
-    function buyItem(uint itemIndex, uint[] categories, uint[] subcategories, uint[] subcategoriesCount) public {
+    function buyItem(uint itemIndex, uint[] memory categories, uint[] memory subcategories) payable public {
         //create transaction
-        
+        uint price = getItemPrice(itemIndex, categories, subcategories);
+        require(msg.value >= price);
+        createTransaction(msg.sender, address(0), itemIndex, TransactionStatus.confirmed, categories, subcategories);
+        addItemAccessToUser(itemIndex, msg.sender, categories, subcategories);
     }
-
     //return all items availabel for sender
     // function getItemsGroupIds() public view returns(uint[] memory indexes) {
     //     uint groupsCount = itemsGroups.length;

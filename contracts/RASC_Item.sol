@@ -71,6 +71,7 @@ contract RASC_Item {
         uint[] memory categories, 
         uint[] memory subcategories) public view returns(uint) 
         {
+        require(subcategories.length == categories.length);
         uint categoriesCount = itemsCategories[itemIndex].length;
         uint[] memory subcategoriesCount = new uint[](categoriesCount);
 
@@ -96,6 +97,59 @@ contract RASC_Item {
                 accessSubcategories[user][itemIndex][categories[i]].push(subcategories[i]);
             }
         }
+    }
+
+    function getItemsCount() public view returns(uint count) {
+        count = items.length;
+    }
+
+    function getItems(uint from, uint count) public view returns(address[] memory sellers, uint[] memory prices) {
+        require(count > 0);
+        require(from < items.length);
+        uint to = from + count;
+        uint currentCount = count;
+
+        if (to > items.length) {
+            to = items.length;
+            currentCount = to - from;
+        }
+
+        prices = new uint[](currentCount);
+        sellers = new address[](currentCount);
+        
+        for (uint i = from; i < to; i++) {
+            Item memory item = items[i];
+            prices[i] = item.price;
+            sellers[i] = item.seller;
+        }
+    }
+
+    function getItem(uint index) public view returns(string memory data, uint price, address seller) {
+        require(items.length > index);
+        Item memory item = items[index];
+        data = "";
+        price = item.price;
+        seller = item.seller;
+
+        if (usersItemsAccess[msg.sender].contains(index) == true) {
+            data = item.data;
+        }
+    }
+
+    function getItemCategoriesCount(uint index) public view returns(uint count) {
+        count = itemsCategories[index].length;
+    }
+
+    function getItemCategory(uint index, uint categoryIndex) public view returns(string memory category) {
+        category = itemsCategories[index][categoryIndex];
+    }
+
+    function getItemSubcategoriesCount(uint index, uint categoryIndex) public view returns(uint count) {
+        count = itemsSubcategories[index][categoryIndex].length;
+    }
+
+    function getItemSubcategory(uint index, uint categoryIndex, uint subcategoryIndex) public view returns(string memory subcategory) {
+        subcategory = itemsSubcategories[index][categoryIndex][subcategoryIndex];
     }
     // mapping (address => mapping(uint => bool)) usersItems;
     // mapping (uint => address[]) itemsBuyers;

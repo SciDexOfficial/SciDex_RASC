@@ -36,24 +36,24 @@ contract RASC_Transaction is RASC_Item {
     
     function createTransaction(
         address buyer, 
-        address seller, 
         address arbiter, 
         uint itemIndex, 
+        TransactionStatus status,
         uint[] memory categories, 
         uint[] memory subcategories) internal returns(uint) 
         {
+        Item memory item = items[itemIndex];
+        address seller = item.seller;
         require(categories.length == subcategories.length);
         require(buyer != address(0));
         require(seller != address(0));
         require(buyer != seller);
-        require(msg.sender != buyer);
-        require(msg.sender != seller);
         Transaction memory transaction = Transaction(
             arbiter, 
             buyer, 
             seller, 
             itemIndex, 
-            TransactionStatus.created, 
+            status, 
             now, 
             now
             );
@@ -72,11 +72,12 @@ contract RASC_Transaction is RASC_Item {
         return index;
     }
     function payTransaction(uint transactionIndex) payable public {
+        //TODO:
         uint[] memory values;
         uint[] memory valuesKeys;
         (values, valuesKeys) = convertTransactionCategoriesToArray(transactionIndex);
     }
-    function convertTransactionCategoriesToArray(uint index) private returns(uint[] memory values, uint[] memory valuesKeys) {
+    function convertTransactionCategoriesToArray(uint index) private view returns(uint[] memory values, uint[] memory valuesKeys) {
         uint subcategoriesCount;
         uint categoriesCount;
         (categoriesCount, subcategoriesCount) = getTransactionSubcategoriesCount(index);
@@ -92,7 +93,7 @@ contract RASC_Transaction is RASC_Item {
             }
         }
     }
-    function getTransactionSubcategoriesCount(uint transactionIndex) private returns(uint categoriesCount, uint count) {
+    function getTransactionSubcategoriesCount(uint transactionIndex) private view returns(uint categoriesCount, uint count) {
         count = 0;
         Transaction memory transaction = transactions[transactionIndex];
         categoriesCount = itemsCategories[transaction.itemIndex].length;
