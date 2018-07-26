@@ -103,27 +103,6 @@ contract RASC_Item {
         count = items.length;
     }
 
-    function getItems(uint from, uint count) public view returns(address[] memory sellers, uint[] memory prices) {
-        require(count > 0);
-        require(from < items.length);
-        uint to = from + count;
-        uint currentCount = count;
-
-        if (to > items.length) {
-            to = items.length;
-            currentCount = to - from;
-        }
-
-        prices = new uint[](currentCount);
-        sellers = new address[](currentCount);
-        
-        for (uint i = from; i < to; i++) {
-            Item memory item = items[i];
-            prices[i] = item.price;
-            sellers[i] = item.seller;
-        }
-    }
-
     function getItem(uint index) public view returns(string memory data, uint price, address seller) {
         require(items.length > index);
         Item memory item = items[index];

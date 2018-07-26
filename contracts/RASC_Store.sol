@@ -15,6 +15,29 @@ contract RASC_Store is RASC_Transaction, RASC_User {
         createTransaction(msg.sender, address(0), itemIndex, TransactionStatus.confirmed, categories, subcategories);
         addItemAccessToUser(itemIndex, msg.sender, categories, subcategories);
     }
+
+    function getStoreItems(uint from, uint count) public view returns(uint nextPageIndex, address[] memory sellers, uint[] memory prices) {
+        require(count > 0);
+        require(from < items.length);
+        uint to = from + count;
+        uint currentCount = count;
+
+        if (to > items.length) {
+            to = items.length;
+            currentCount = to - from;
+        }
+
+        prices = new uint[](currentCount);
+        sellers = new address[](currentCount);
+        
+        for (uint i = from; i < to; i++) {
+            Item memory item = items[i];
+            prices[i] = item.price;
+            sellers[i] = item.seller;
+        }
+
+        nextPageIndex = to;
+    }
     //return all items availabel for sender
     // function getItemsGroupIds() public view returns(uint[] memory indexes) {
     //     uint groupsCount = itemsGroups.length;
