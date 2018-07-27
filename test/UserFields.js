@@ -1,4 +1,4 @@
-const UserFields = artifacts.require("RASC_UserFields");
+const UserFields = artifacts.require("RASC_UserFields")
 
 contract("Testing UserFields contract", async (accounts) => {
     it("check owner", async() => {
