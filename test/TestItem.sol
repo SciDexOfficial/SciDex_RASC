@@ -9,9 +9,9 @@ contract TestItem {
         RASC_Item item = RASC_Item(DeployedAddresses.RASC_Item());
         uint index = item.createItem("tttt", 12);
         uint price;
-        bool isOwner;
+        address seller;
         string memory data;
-        (data, price, isOwner) = item.getItemInfo(index);
+        (data, price, seller) = item.getItemInfo(index);
         Assert.equal(price, 12, "expected 12");
     }
     function test2() public {
@@ -19,8 +19,8 @@ contract TestItem {
         uint index = item.createItem("aaaa", 1);
         uint price;
         string memory data;
-        bool isOwner;
-        (data, price, isOwner) = item.getItemInfo(index);
+        address seller;
+        (data, price, seller) = item.getItemInfo(index);
         Assert.equal(price, 1, "expected 1");
     }
 }
