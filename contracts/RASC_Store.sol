@@ -6,14 +6,23 @@ import "./RASC_Transaction.sol";
 
 contract RASC_Store is RASC_Transaction, RASC_User {
     using SafeMath for uint;
-
     
     function buyItem(uint itemIndex, uint[] memory categories, uint[] memory subcategories) payable public {
         //create transaction
         uint price = getItemPrice(itemIndex, categories, subcategories);
         require(msg.value >= price);
-        createTransaction(msg.sender, address(0), itemIndex, TransactionStatus.confirmed, categories, subcategories);
-        addItemAccessToUser(itemIndex, msg.sender, categories, subcategories);
+        
+        uint transactionIndex = createTransaction(
+            msg.sender, 
+            address(0), 
+            itemIndex, 
+            TransactionStatus.created, 
+            price, 
+            categories, 
+            subcategories
+            );
+        payTransaction(transactionIndex);
+        autoconfirmTransaction(transactionIndex, categories, subcategories);
     }
 
     function getStoreItems(uint from, uint count) public view returns(uint nextPageIndex, address[] memory sellers, uint[] memory prices) {

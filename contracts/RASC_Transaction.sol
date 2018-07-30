@@ -1,8 +1,9 @@
 pragma solidity ^0.4.23;
 
 import "./RASC_Item.sol";
+import "./Ownable.sol";
 
-contract RASC_Transaction is RASC_Item {
+contract RASC_Transaction is RASC_Item, Ownable {
     enum TransactionStatus {created, canceled, confirmed}
     //events
     event TransactionChangedStatus(uint transactionIndex, TransactionStatus status, address executer);
@@ -14,6 +15,8 @@ contract RASC_Transaction is RASC_Item {
         address seller;
         uint itemIndex;
         TransactionStatus status;
+        bool isPaid;
+        uint amount;
         uint createDate;
         uint updateDate;
     }
@@ -39,6 +42,7 @@ contract RASC_Transaction is RASC_Item {
         address arbiter, 
         uint itemIndex, 
         TransactionStatus status,
+        uint amount,
         uint[] memory categories, 
         uint[] memory subcategories) internal returns(uint) 
         {
@@ -54,6 +58,8 @@ contract RASC_Transaction is RASC_Item {
             seller, 
             itemIndex, 
             status, 
+            false,
+            amount,
             now, 
             now
             );
@@ -71,11 +77,15 @@ contract RASC_Transaction is RASC_Item {
         
         return index;
     }
+
     function payTransaction(uint transactionIndex) payable public {
-        //TODO:
-        uint[] memory values;
-        uint[] memory valuesKeys;
-        (values, valuesKeys) = convertTransactionCategoriesToArray(transactionIndex);
+        require(msg.value >= transaction.amount);
+        Transaction storage transaction = transactions[transactionIndex];
+        transaction.isPaid = true;
+        if (msg.value - transaction.amount > 0) {
+            msg.sender.transfer(msg.value - transaction.amount);
+        }
+
     }
     function convertTransactionCategoriesToArray(uint index) private view returns(uint[] memory values, uint[] memory valuesKeys) {
         uint subcategoriesCount;
@@ -100,6 +110,17 @@ contract RASC_Transaction is RASC_Item {
         for (uint i = 0; i < categoriesCount; i++) {
             count += transactionsCategories[transactionIndex][i].length;
         }
+    }
+    function autoconfirmTransaction(uint transactionIndex, uint[] categories, uint[] subcategories) internal {
+        Transaction memory transaction = transactions[transactionIndex];
+        require(transaction.isPaid == true);
+        require(transaction.arbiter == address(0));
+
+        transactions[transactionIndex].status = TransactionStatus.confirmed;
+        transaction.seller.transfer(transaction.amount);
+
+        addItemAccessToUser(transaction.itemIndex, msg.sender, categories, subcategories);
+        emit TransactionChangedStatus(transactionIndex, TransactionStatus.confirmed, msg.sender);
     }
     function confirmTransaction(uint transactionIndex) public onlyArbiter(transactionIndex) {
         //TODO: check if user can confirm
