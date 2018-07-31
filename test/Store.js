@@ -54,4 +54,20 @@ contract("Testing Store contract", async (accounts) => {
         assert.equal(category1.toString(), "category1", "incorrect category")
         assert.equal(category2.toString(), "category2", "incorrect category")
     })
+    it("addSubcategory test", async() => {
+        let instance = await Store.deployed()
+        let catCountBefore = await instance.getItemSubcategoriesCount.call(0, 0)
+        await instance.addSubcategory(0, 0, "subcategory1")
+        await instance.addSubcategory(0, 0, "subcategory2")
+        let catCount = await instance.getItemSubcategoriesCount.call(0, 0)
+        assert.equal(catCount.toNumber(), catCountBefore.toNumber() + 2, "cannot add subcategory")
+    })
+    it("getItemSubcategory test", async() => {
+        let instance = await Store.deployed()
+        let subcategory1 = await instance.getItemSubcategory.call(0, 0, 0)
+        let subcategory2 = await instance.getItemSubcategory.call(0, 0, 1)
+        assert.equal(subcategory1.toString(), "subcategory1", "incorrect subcategory")
+        assert.equal(subcategory2.toString(), "subcategory2", "incorrect subcategory")
+    })
+
 })
