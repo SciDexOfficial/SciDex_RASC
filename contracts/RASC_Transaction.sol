@@ -119,7 +119,7 @@ contract RASC_Transaction is RASC_Item, Ownable {
         transactions[transactionIndex].status = TransactionStatus.confirmed;
         transaction.seller.transfer(transaction.amount);
 
-        addItemAccessToUser(transaction.itemIndex, msg.sender, categories, subcategories);
+        addItemPurchaseToUser(transaction.itemIndex, msg.sender, categories, subcategories);
         emit TransactionChangedStatus(transactionIndex, TransactionStatus.confirmed, msg.sender);
     }
     function confirmTransaction(uint transactionIndex) public onlyArbiter(transactionIndex) {

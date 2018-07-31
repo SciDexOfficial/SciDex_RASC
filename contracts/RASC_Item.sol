@@ -27,8 +27,8 @@ contract RASC_Item {
 
     mapping (address => uint[]) usersItems;
 
-    mapping (address => uint[]) usersItemsAccess;
-    mapping (address => mapping (uint => mapping(uint => uint[]))) accessSubcategories;
+    mapping (address => uint[]) usersItemsPurchase;
+    mapping (address => mapping (uint => mapping(uint => uint[]))) purchaseSubcategories;
 
     function createItem(string data, uint price) public returns(uint index) {
         Item memory item = Item(data, price, msg.sender);
@@ -38,7 +38,7 @@ contract RASC_Item {
         emit ItemCreated(index);
     }
 
-    function removeAllGroups(uint itemIndex) public {
+    function removeAllCategories(uint itemIndex) public {
         string[] memory categories = itemsCategories[itemIndex];
         for (uint i = 0; i < categories.length; i++) {
             delete itemsSubcategories[itemIndex][i]; 
@@ -69,7 +69,7 @@ contract RASC_Item {
     function getItemPrice(
         uint itemIndex, 
         uint[] memory categories, 
-        uint[] memory subcategories) public view returns(uint) 
+        uint[] memory subcategories) internal view returns(uint) 
         {
         require(subcategories.length == categories.length);
         uint categoriesCount = itemsCategories[itemIndex].length;
@@ -80,37 +80,36 @@ contract RASC_Item {
         }
         uint price = items[itemIndex].price;
         for (uint j = 0; j < categoriesCount; j++) {
-            if (subcategoriesCount[j] > 0) {
-                price = price.mul(subcategoriesCount[j]).div(itemsSubcategories[itemIndex][j].length);
-            }
+            require(subcategoriesCount[j] > 0);
+            price = price.mul(subcategoriesCount[j]).div(itemsSubcategories[itemIndex][j].length);
         }
         return price;
     }
     
-    function addItemAccessToUser(uint itemIndex, address user, uint[] memory categories, uint[] memory subcategories) internal {
+    function addItemPurchaseToUser(uint itemIndex, address user, uint[] memory categories, uint[] memory subcategories) internal {
         require(categories.length == subcategories.length);
-        if (usersItemsAccess[user].contains(itemIndex) == false) {
-            usersItemsAccess[user].push(itemIndex);
+        if (usersItemsPurchase[user].contains(itemIndex) == false) {
+            usersItemsPurchase[user].push(itemIndex);
         }
         for (uint i = 0; i < categories.length; i++) {
-            if (accessSubcategories[user][itemIndex][categories[i]].contains(subcategories[i]) == false) {
-                accessSubcategories[user][itemIndex][categories[i]].push(subcategories[i]);
+            if (purchaseSubcategories[user][itemIndex][categories[i]].contains(subcategories[i]) == false) {
+                purchaseSubcategories[user][itemIndex][categories[i]].push(subcategories[i]);
             }
         }
     }
-
+    
     function getItemsCount() public view returns(uint count) {
         count = items.length;
     }
-
-    function getItemInfo(uint index) public view returns(string memory data, uint price, address seller) {
+    
+    function getItemInfo(uint index) public view returns(string memory data, uint price, address seller, uint[] memory categories, uint[] memory subcategories) {
         require(items.length > index);
         Item memory item = items[index];
         data = "";
         price = item.price;
         seller = item.seller;
 
-        if (usersItemsAccess[msg.sender].contains(index) == true) {
+        if (usersItemsPurchase[msg.sender].contains(index) == true) {
             data = item.data;
         }
     }

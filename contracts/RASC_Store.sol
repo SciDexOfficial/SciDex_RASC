@@ -25,31 +25,41 @@ contract RASC_Store is RASC_Transaction, RASC_User {
         autoconfirmTransaction(transactionIndex, categories, subcategories);
     }
 
-    function getStoreItems(uint from, uint count) public view returns(uint nextPageIndex, address[] memory sellers, uint[] memory prices) {
+    function getStoreItems(uint from, uint count) public view returns(
+        uint nextPageIndex, 
+        uint[] memory indexies, 
+        address[] memory sellers, 
+        uint[] memory prices) 
+        {
         require(count > 0);
         require(from < items.length);
         uint to = from + count;
-        uint currentCount = count;
-
+        uint correctCount = count;
+    
         if (to > items.length) {
             to = items.length;
-            currentCount = to - from;
+            correctCount = to - from;
         }
-
-        prices = new uint[](currentCount);
-        sellers = new address[](currentCount);
-        
-        for (uint i = from; i < to; i++) {
-            Item memory item = items[i];
+        indexies = new uint[](correctCount);
+        prices = new uint[](correctCount);
+        sellers = new address[](correctCount);
+        uint i = 0;
+        uint index = from;
+        while (i < to - from) {
+            Item memory item = items[index];
+            //TODO: check if user has access to item
             prices[i] = item.price;
             sellers[i] = item.seller;
+            indexies[i] = index;
+            index++;
+            i++;
         }
 
-        nextPageIndex = to;
+        nextPageIndex = index;
     }
 
     function getBoughtItems() public view returns(uint[] memory result) {
-        result = usersItemsAccess[msg.sender];
+        result = usersItemsPurchase[msg.sender];
     }
 
     function getCreatedItems() public view returns(uint[] memory result) {
