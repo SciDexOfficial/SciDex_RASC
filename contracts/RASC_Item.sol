@@ -3,11 +3,14 @@ pragma solidity ^0.4.23;
 // import "./RASC_Access.sol";
 import "./ArrayUtils.sol";
 import "./SafeMath.sol";
+import "./StringUtils.sol";
 
 contract RASC_Item {
     using ArrayUtils for uint[];
     using ArrayUtils for address[];
     using ArrayUtils for string[];
+
+    using StringUtils for string;
 
     using SafeMath for uint;
     //events
@@ -164,6 +167,12 @@ contract RASC_Item {
     function getItemSubcategory(uint index, uint categoryIndex, uint subcategoryIndex) public view returns(string memory subcategory) {
         subcategory = itemsSubcategories[index][categoryIndex][subcategoryIndex];
     }
+
+
+    function convertStringToArray(string memory str, string delim) internal pure returns(string[] memory stringsArray) {
+        stringsArray = str.split(delim);
+    }
+
     // mapping (address => mapping(uint => bool)) usersItems;
     // mapping (uint => address[]) itemsBuyers;
 
