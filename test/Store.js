@@ -28,11 +28,7 @@ contract("Testing Store contract", async (accounts) => {
         let items = await instance.getCreatedItems.call()
         assert.equal(items[0].toNumber(), 0, "incorrect value " + items[0].toNumber())
     })
-    it("get item price test", async() => {
-        let instance = await Store.deployed()
-        let price = await instance.getItemPrice.call("0", [], [])
-        assert.equal(price.toNumber(), 12, "incorrect price " + price.toNumber())
-    })
+    
     it("buy item test", async() => {
         let instance = await Store.deployed()
         await instance.buyItem(1, [], [], {from: accounts[1], value: 30})
@@ -75,20 +71,20 @@ contract("Testing Store contract", async (accounts) => {
         assert.equal(subcategory1.toString(), "subcategory1", "incorrect subcategory")
         assert.equal(subcategory2.toString(), "subcategory2", "incorrect subcategory")
     })
-    it("getItemPrice for subcategories test", async() => {
-        let instance = await Store.deployed()
-        let itemPrice = (await instance.getItemPrice.call(0, [], [])).toNumber()
-        let price1 = (await instance.getItemPrice.call(0, [0], [0])).toNumber()
-        assert.equal(price1, itemPrice / 2.0, "incorrect price")
-        let price2 = (await instance.getItemPrice.call(0, [1], [0])).toNumber()
-        assert.equal(price2, itemPrice / 3.0, "incorrect price")
-        let price3 = (await instance.getItemPrice.call(0, [0, 1], [0, 0])).toNumber()
-        assert.equal(price3, itemPrice / 3.0 / 2.0, "incorrect price")
-        let price4 = (await instance.getItemPrice.call(0, [0, 0], [0, 1])).toNumber()
-        assert.equal(price4, itemPrice , "incorrect price")
-        let price5 = (await instance.getItemPrice.call(0, [0, 1, 1], [0, 0, 1])).toNumber()
-        assert.equal(price5, itemPrice / 3.0, "incorrect price")
-    })
+    // it("getItemPrice for subcategories test", async() => {
+    //     let instance = await Store.deployed()
+    //     let itemPrice = (await instance.getItemPrice.call(0, [], [])).toNumber()
+    //     let price1 = (await instance.getItemPrice.call(0, [0], [0])).toNumber()
+    //     assert.equal(price1, itemPrice / 2.0, "incorrect price")
+    //     let price2 = (await instance.getItemPrice.call(0, [1], [0])).toNumber()
+    //     assert.equal(price2, itemPrice / 3.0, "incorrect price")
+    //     let price3 = (await instance.getItemPrice.call(0, [0, 1], [0, 0])).toNumber()
+    //     assert.equal(price3, itemPrice / 3.0 / 2.0, "incorrect price")
+    //     let price4 = (await instance.getItemPrice.call(0, [0, 0], [0, 1])).toNumber()
+    //     assert.equal(price4, itemPrice , "incorrect price")
+    //     let price5 = (await instance.getItemPrice.call(0, [0, 1, 1], [0, 0, 1])).toNumber()
+    //     assert.equal(price5, itemPrice / 3.0, "incorrect price")
+    // })
     it("getStoreItems all test", async() => {
         let instance = await Store.deployed()
         let count = (await instance.getItemsCount.call()).toNumber()
@@ -97,5 +93,29 @@ contract("Testing Store contract", async (accounts) => {
     })
     // it("buyItem with subcategories", async() => {
 
+    // })
+
+    ///
+    
+    
+    // it("convertStringToArray1", async() => {
+    //     let instance = await Store.deployed()
+    //     let count = await instance.convertStringToArray.call("asdasd sdasdasd  1111  23232  234323 dsdad", "  ", 0)
+    //     assert.equal(count.toString(), "asdasd sdasdasd", "incorrect lib " + count.toString())
+    // })
+    // it("convertStringToArray2", async() => {
+    //     let instance = await Store.deployed()
+    //     let count = await instance.convertStringToArray.call("asdasd sdasdasd  1111  23232  234323 dsdad", "  ", 1)
+    //     assert.equal(count.toString(), "1111", "incorrect lib " + count.toString())
+    // })
+    // it("convertStringToArray3", async() => {
+    //     let instance = await Store.deployed()
+    //     let count = await instance.convertStringToArray.call("asdasd sdasdasd  1111  23232  234323 dsdad", "  ", 2)
+    //     assert.equal(count.toString(), "23232", "incorrect lib " + count.toString())
+    // })
+    // it("convertStringToArray4", async() => {
+    //     let instance = await Store.deployed()
+    //     let count = await instance.convertStringToArray.call("asdasd sdasdasd  1111  23232  234323 dsdad", "  ", 3)
+    //     assert.equal(count.toString(), "234323 dsdad", "incorrect lib " + count.toString())
     // })
 })
