@@ -89,4 +89,13 @@ contract("Testing Store contract", async (accounts) => {
         let price5 = (await instance.getItemPrice.call(0, [0, 1, 1], [0, 0, 1])).toNumber()
         assert.equal(price5, itemPrice / 3.0, "incorrect price")
     })
+    it("getStoreItems all test", async() => {
+        let instance = await Store.deployed()
+        let count = (await instance.getItemsCount.call()).toNumber()
+        let items = await instance.getStoreItems.call(0, count)
+        assert.equal(items[0].toNumber(), count, "" + items[0].toNumber())
+    })
+    // it("buyItem with subcategories", async() => {
+
+    // })
 })
