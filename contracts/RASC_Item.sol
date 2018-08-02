@@ -14,7 +14,10 @@ contract RASC_Item {
 
     using SafeMath for uint;
     //events
-    event ItemCreated(uint itemIndex);
+    event ItemCreated(uint itemIndex, uint price, string categories);
+    event CategoryAdded(uint itemIndex, uint categoryIndex, string category);
+    event SubcategoryAdded(uint itemIndex, uint categoryIndex, uint subcategoryIndex, string subcategory);
+    event CategoriesAndSubcategoriesDeleted(uint itemIndex);
 
     //basic data item
     struct Item {
@@ -33,20 +36,22 @@ contract RASC_Item {
     mapping (address => uint[]) usersItemsPurchase;
     mapping (address => mapping (uint => mapping(uint => uint[]))) purchaseSubcategories;
 
-    function createItem(string data, uint price) public returns(uint index) {
+
+    function createItem(string data, uint price, string memory categories) public returns(uint index) {
         Item memory item = Item(data, price, msg.sender);
         index = items.push(item) - 1;
         usersItems[msg.sender].push(index);
-
-        emit ItemCreated(index);
+        addItemCategoriesAndSubcategories(index, categories);
+        emit ItemCreated(index, price, categories);
     }
 
-    function removeAllCategories(uint itemIndex) public {
+    function removeAllCategoriesAndSubcategories(uint itemIndex) public {
         string[] memory categories = itemsCategories[itemIndex];
         for (uint i = 0; i < categories.length; i++) {
             delete itemsSubcategories[itemIndex][i]; 
         }
         delete itemsCategories[itemIndex];
+        emit CategoriesAndSubcategoriesDeleted(itemIndex);
     }
 
     function addCategory(uint itemIndex, string category) public returns(uint index) {
@@ -55,6 +60,7 @@ contract RASC_Item {
         require(itemsCategories[itemIndex].contains(category) == false);
 
         index = itemsCategories[itemIndex].push(category) - 1;
+        emit CategoryAdded(itemIndex, index, category);
     }
 
     function addSubcategory(uint itemIndex, uint categoryIndex, string subcategory) public returns(uint index) {
@@ -63,6 +69,7 @@ contract RASC_Item {
         require(itemsCategories[itemIndex].length > categoryIndex);
         require(itemsSubcategories[itemIndex][categoryIndex].contains(subcategory) == false);
         index = itemsSubcategories[itemIndex][categoryIndex].push(subcategory) - 1;
+        emit SubcategoryAdded(itemIndex, categoryIndex, index, subcategory);
     }
     //sample :
     //{1:[1,2]; 2:[2], 3:[4,5]}
@@ -137,7 +144,12 @@ contract RASC_Item {
         }
     }
 
-    function getItemPusrchaseSubcategories(address user, uint index) internal view returns(uint[] memory subcategories, uint[] memory categories) {
+    function getItemPusrchaseSubcategories(
+        address user, 
+        uint index) 
+        internal view returns(
+            uint[] memory subcategories, 
+            uint[] memory categories) {
         uint categoriesCount = itemsCategories[index].length;
         uint count = getItemPusrchaseSubcategoriesCount(user, index);
         subcategories = new uint[](count);
@@ -168,7 +180,9 @@ contract RASC_Item {
         subcategory = itemsSubcategories[index][categoryIndex][subcategoryIndex];
     }
 
+    function addItemCategoriesAndSubcategories(uint index, string memory categories) internal {
 
+    }
     function convertStringToArray(string memory str, string delim) internal pure returns(string[] memory stringsArray) {
         stringsArray = str.split(delim);
     }
