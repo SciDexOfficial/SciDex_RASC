@@ -180,12 +180,23 @@ contract RASC_Item {
         subcategory = itemsSubcategories[index][categoryIndex][subcategoryIndex];
     }
 
-    function addItemCategoriesAndSubcategories(uint index, string memory categories) internal {
-
+    function addItemCategoriesAndSubcategories(uint itemIndex, string memory categoriesAndSubcategories) internal {
+        string[] memory categories = categoriesAndSubcategories.split(";");
+        for (uint i = 0; i < categories.length; i++) {
+            string[] memory subcategories = categories[i].split(",");
+            if (subcategories.length > 0) {
+                if (itemsCategories[itemIndex].contains(subcategories[0]) == false) {
+                    uint index = itemsCategories[itemIndex].push(subcategories[0]) - 1;
+                    for (uint j = 1; j < subcategories.length; j++) {
+                        itemsSubcategories[itemIndex][index].push(subcategories[j]);
+                    }
+                }
+            }
+        }
     }
-    function convertStringToArray(string memory str, string delim) internal pure returns(string[] memory stringsArray) {
-        stringsArray = str.split(delim);
-    }
+    // function convertStringToArray(string memory str, string delim) internal pure returns(string[] memory stringsArray) {
+    //     stringsArray = str.split(delim);
+    // }
 
     // mapping (address => mapping(uint => bool)) usersItems;
     // mapping (uint => address[]) itemsBuyers;
