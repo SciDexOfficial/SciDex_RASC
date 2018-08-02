@@ -14,7 +14,7 @@ contract RASC_Item {
 
     using SafeMath for uint;
     //events
-    event ItemCreated(uint itemIndex, uint price, string categories);
+    event ItemCreated(uint itemIndex, address owner, uint price, string categories);
     event CategoryAdded(uint itemIndex, uint categoryIndex, string category);
     event SubcategoryAdded(uint itemIndex, uint categoryIndex, uint subcategoryIndex, string subcategory);
     event CategoriesAndSubcategoriesDeleted(uint itemIndex);
@@ -42,7 +42,7 @@ contract RASC_Item {
         index = items.push(item) - 1;
         usersItems[msg.sender].push(index);
         addItemCategoriesAndSubcategories(index, categories);
-        emit ItemCreated(index, price, categories);
+        emit ItemCreated(index, msg.sender, price, categories);
     }
 
     function removeAllCategoriesAndSubcategories(uint itemIndex) public {
