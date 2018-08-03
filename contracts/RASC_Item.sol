@@ -118,8 +118,9 @@ contract RASC_Item {
         address seller, 
         uint categoriesCount, 
         uint[] memory subcategoriesCount,
-        uint[] memory purchasedSubcategories,
-        uint[] memory purchasedCategories) {
+        uint[] memory purchasedCategories,
+        uint[] memory purchasedSubcategories
+        ) {
         require(items.length > index);
         Item memory item = items[index];
         data = "";
@@ -160,6 +161,7 @@ contract RASC_Item {
             for (uint j = 0; j < subCount; j++) {
                 subcategories[key] = purchaseSubcategories[user][index][i][j];
                 categories[key] = i;
+                key++;
             }
         }
     }

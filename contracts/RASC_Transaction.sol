@@ -111,7 +111,7 @@ contract RASC_Transaction is RASC_Item, Ownable {
             count += transactionsCategories[transactionIndex][i].length;
         }
     }
-    function autoconfirmTransaction(uint transactionIndex, uint[] categories, uint[] subcategories) internal {
+    function autoconfirmTransaction(uint transactionIndex, uint[] memory categories, uint[] memory subcategories) internal {
         Transaction memory transaction = transactions[transactionIndex];
         require(transaction.isPaid == true);
         require(transaction.arbiter == address(0));
