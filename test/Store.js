@@ -119,13 +119,26 @@ contract("Testing Store contract", async (accounts) => {
         let items = await instance.getBoughtItems.call({from: accounts[1]})
         assert.equal(items[0].toNumber(), 1, "incorrect value " + items[0].toNumber())
     })
-    // it("buyItem with subcategories", async() => {
-
-    // })
-
-    ///
-    
-    
+    it("get bought item info", async() => {
+        let instance = await Store.deployed()
+        let item = await instance.getItemInfo.call(1, {from: accounts[1]})
+        assert.equal(item[0], "http://test2/link/", "incorrect data " + item[0])
+    })
+    it("get bought item info for incorrect account", async() => {
+        let instance = await Store.deployed()
+        let item = await instance.getItemInfo.call(1, {from: accounts[2]})
+        assert.equal(item[0], "", "incorrect data " + item[0])
+    })
+    it("get bought item subcategories", async() => {
+        let instance = await Store.deployed()
+        let item = await instance.getItemInfo.call(1, {from: accounts[1]})
+        assert.equal(item[5][0].toNumber(), 0, "incorrect data")
+        assert.equal(item[5][1].toNumber(), 0, "incorrect data")
+        assert.equal(item[5][2].toNumber(), 1, "incorrect data")
+        assert.equal(item[6][0].toNumber(), 0, "incorrect data")
+        assert.equal(item[6][1].toNumber(), 1, "incorrect data")
+        assert.equal(item[6][2].toNumber(), 0, "incorrect data")
+    })
     // it("convertStringToArray1", async() => {
     //     let instance = await Store.deployed()
     //     let count = await instance.convertStringToArray.call("asdasd sdasdasd  1111  23232  234323 dsdad", "  ", 0)
