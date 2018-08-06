@@ -39,6 +39,7 @@ contract RASC_Item {
         string author;
         uint rating;
         string tags;
+        string cats;
     }
     // mapping (uint => string[]) itemsTags;
 
@@ -59,12 +60,13 @@ contract RASC_Item {
         string description, 
         uint price, 
         string author, 
+        uint rating,
         string memory categories,
         string memory tags) public returns(uint index) {
-        Item memory item = Item(data, price, msg.sender, title, description, author, 0, tags);
+        Item memory item = Item(data, price, msg.sender, title, description, author, rating, tags, categories);
         index = items.push(item) - 1;
         usersItems[msg.sender].push(index);
-        addItemCategoriesAndSubcategories(index, categories);
+        // addItemCategoriesAndSubcategories(index, categories);
         emit ItemCreated(index, title, description, author, msg.sender, price, categories, tags);
     }
 
@@ -134,24 +136,37 @@ contract RASC_Item {
     function getItemsCount() public view returns(uint count) {
         count = items.length;
     }
-    
+    function getItemPurchaseInfo(uint index) public view returns(
+        string memory data,
+        uint[] memory purchasedCategories,
+        uint[] memory purchasedSubcategories) {
+        require(items.length > index);
+        data = "";
+        Item memory item = items[index];
+        uint categoriesCount = itemsCategories[index].length;
+        uint[] memory subcategoriesCount = new uint[](categoriesCount);
+        for (uint i = 0; i < categoriesCount; i++) {
+            subcategoriesCount[i] = itemsSubcategories[index][i].length;
+        }
+        if (usersItemsPurchase[msg.sender].contains(index) == true) {
+            data = item.data;
+            (purchasedSubcategories, purchasedCategories) = getItemPusrchaseSubcategories(msg.sender, index);
+        }
+    }
     function getItemInfo(uint index) public view returns(
         string memory title,
         string memory description,
-        string memory author,
-        string memory data, 
+        string memory author, 
         uint price, 
         address seller, 
         uint categoriesCount,
         uint rating,
         string memory tags,
-        uint[] memory subcategoriesCount,
-        uint[] memory purchasedCategories,
-        uint[] memory purchasedSubcategories
+        uint[] memory subcategoriesCount
         ) {
         require(items.length > index);
         Item memory item = items[index];
-        data = "";
+        
         title = item.title;
         description = item.description;
         author = item.author;
@@ -161,13 +176,6 @@ contract RASC_Item {
         seller = item.seller;
         categoriesCount = itemsCategories[index].length;
         subcategoriesCount = new uint[](categoriesCount);
-        for (uint i = 0; i < categoriesCount; i++) {
-            subcategoriesCount[i] = itemsSubcategories[index][i].length;
-        }
-        if (usersItemsPurchase[msg.sender].contains(index) == true) {
-            data = item.data;
-            (purchasedSubcategories, purchasedCategories) = getItemPusrchaseSubcategories(msg.sender, index);
-        }
     }
 
     function getItemPusrchaseSubcategoriesCount(address user, uint index) internal view returns(uint count) {
