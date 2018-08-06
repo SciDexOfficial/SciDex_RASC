@@ -41,6 +41,15 @@ contract("Testing Store contract", async (accounts) => {
         
         assert.equal(itemsCount.toNumber(), itemsCountBefore.toNumber() + 1, "cannot create item")
     })
+    ///????????????????????
+    it("create item without categories test", async() => {
+        let instance = await Store.deployed()
+        let itemsCountBefore = await instance.getItemsCount.call()
+        await instance.createItem("http://test2/link/", "title", "some description ...", 12 * 2, "Yurii", 5,  "", "tag1,tag2,tag3", {from: accounts[3]})
+        let itemsCount = await instance.getItemsCount.call()
+        
+        assert.equal(itemsCount.toNumber(), itemsCountBefore.toNumber() + 1, "cannot create item")
+    })
     it("get item test", async() => {
         let instance = await Store.deployed()
         let info = await instance.getItemInfo.call(0)
@@ -139,11 +148,16 @@ contract("Testing Store contract", async (accounts) => {
         assert.equal(item[6][1].toNumber(), 1, "incorrect data")
         assert.equal(item[6][2].toNumber(), 0, "incorrect data")
     })
-    // it("convertStringToArray1", async() => {
-    //     let instance = await Store.deployed()
-    //     let count = await instance.convertStringToArray.call("asdasd sdasdasd  1111  23232  234323 dsdad", "  ", 0)
-    //     assert.equal(count.toString(), "asdasd sdasdasd", "incorrect lib " + count.toString())
-    // })
+    it("convertStringToArray1", async() => {
+        let instance = await Store.deployed()
+        let s = await instance.convertStringToArray.call("asdasd sdasdasd 1111 23232 234323 dsdad", "  ")
+        assert.equal(s.toString(), "asdasd sdasdasd 1111 23232 234323 dsdad", "incorrect lib " + s.toString())
+    })
+    it("convertStringToArray0", async() => {
+        let instance = await Store.deployed()
+        let s = await instance.convertStringToArray.call("", "  ")
+        assert.equal(s.toString(), "empty_array", "incorrect lib " + s.toString())
+    })
     // it("convertStringToArray2", async() => {
     //     let instance = await Store.deployed()
     //     let count = await instance.convertStringToArray.call("asdasd sdasdasd  1111  23232  234323 dsdad", "  ", 1)

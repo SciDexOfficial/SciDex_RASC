@@ -6,6 +6,9 @@ library StringUtils {
         internal pure
         returns (string[] memory splitArr) {
         bytes memory _baseBytes = bytes(_base);
+        if (_baseBytes.length == 0) {
+            return new string[](0);
+        }
         uint delimSize = bytes(_value).length;
         uint _offset = 0;
         uint arraySize = splitSize(_base, _value);
@@ -32,6 +35,9 @@ library StringUtils {
     }
     function splitSize(string memory _base, string memory _value) internal pure returns(uint size) {
         bytes memory _baseBytes = bytes(_base);
+        if (_baseBytes.length == 0) {
+            return 0;
+        }
         bytes memory _valueBytes = bytes(_value);
 
         assert(_valueBytes.length >= 1);

@@ -248,9 +248,15 @@ contract RASC_Item {
             }
         }
     }
-    // function convertStringToArray(string memory str, string delim) internal pure returns(string[] memory stringsArray) {
-    //     stringsArray = str.split(delim);
-    // }
+    //test functions
+    function convertStringToArray(string memory str, string delim) public pure returns(string memory s) {
+        string[] memory arr = str.split(delim);
+        if (arr.length == 0) {
+            s = "empty_array";
+        } else {
+            s = arr[0];
+        }
+    }
 
     // mapping (address => mapping(uint => bool)) usersItems;
     // mapping (uint => address[]) itemsBuyers;
