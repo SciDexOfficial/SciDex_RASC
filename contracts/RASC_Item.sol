@@ -14,7 +14,17 @@ contract RASC_Item {
 
     using SafeMath for uint;
     //events
-    event ItemCreated(uint itemIndex, address owner, uint price, string categories);
+    event ItemCreated(
+        uint itemIndex, 
+        string title, 
+        string description, 
+        string author, 
+        address owner, 
+        uint price, 
+        string categories,
+        string tags
+    );
+
     event CategoryAdded(uint itemIndex, uint categoryIndex, string category);
     event SubcategoryAdded(uint itemIndex, uint categoryIndex, uint subcategoryIndex, string subcategory);
     event CategoriesAndSubcategoriesDeleted(uint itemIndex);
@@ -24,8 +34,14 @@ contract RASC_Item {
         string data;
         uint price;
         address seller;
+        string title;
+        string description;
+        string author;
+        uint rating;
+        string tags;
     }
-    
+    // mapping (uint => string[]) itemsTags;
+
     Item[] items;
     
     mapping (uint => string[]) itemsCategories;
@@ -37,12 +53,19 @@ contract RASC_Item {
     mapping (address => mapping (uint => mapping(uint => uint[]))) purchaseSubcategories;
 
 
-    function createItem(string data, uint price, string memory categories) public returns(uint index) {
-        Item memory item = Item(data, price, msg.sender);
+    function createItem(
+        string data, 
+        string title, 
+        string description, 
+        uint price, 
+        string author, 
+        string memory categories,
+        string memory tags) public returns(uint index) {
+        Item memory item = Item(data, price, msg.sender, title, description, author, 0, tags);
         index = items.push(item) - 1;
         usersItems[msg.sender].push(index);
         addItemCategoriesAndSubcategories(index, categories);
-        emit ItemCreated(index, msg.sender, price, categories);
+        emit ItemCreated(index, title, description, author, msg.sender, price, categories, tags);
     }
 
     function removeAllCategoriesAndSubcategories(uint itemIndex) public {
@@ -113,10 +136,15 @@ contract RASC_Item {
     }
     
     function getItemInfo(uint index) public view returns(
+        string memory title,
+        string memory description,
+        string memory author,
         string memory data, 
         uint price, 
         address seller, 
-        uint categoriesCount, 
+        uint categoriesCount,
+        uint rating,
+        string memory tags,
         uint[] memory subcategoriesCount,
         uint[] memory purchasedCategories,
         uint[] memory purchasedSubcategories
@@ -124,6 +152,11 @@ contract RASC_Item {
         require(items.length > index);
         Item memory item = items[index];
         data = "";
+        title = item.title;
+        description = item.description;
+        author = item.author;
+        rating = item.rating;
+        tags = item.tags;
         price = item.price;
         seller = item.seller;
         categoriesCount = itemsCategories[index].length;
