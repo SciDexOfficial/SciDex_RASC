@@ -249,7 +249,7 @@ contract RASC_Item {
         }
     }
     //test functions
-    function convertStringToArray(string memory str, string delim) public pure returns(string memory s) {
+    function convertStringToArrayTest(string memory str, string delim) public pure returns(string memory s) {
         string[] memory arr = str.split(delim);
         if (arr.length == 0) {
             s = "empty_array";
@@ -257,7 +257,12 @@ contract RASC_Item {
             s = arr[0];
         }
     }
-
+    function getPriceTest(
+        uint itemIndex, 
+        uint[] memory categories, 
+        uint[] memory subcategories) public view returns(uint price) {
+        price = getItemPrice(itemIndex, categories, subcategories); 
+    }
     // mapping (address => mapping(uint => bool)) usersItems;
     // mapping (uint => address[]) itemsBuyers;
 

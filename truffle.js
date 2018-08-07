@@ -9,9 +9,7 @@ module.exports = {
       host: "127.0.0.1",
       port: 7545,
       network_id: "5777",
-      from: "0x32137f2A13eA73d5Fc45881565Fcf7Ed00c21eaf".toLowerCase(),
-      gasPrice: 1,
-      gas: 999999999999998
+      from: "0x32137f2A13eA73d5Fc45881565Fcf7Ed00c21eaf".toLowerCase()
     },
     development: {
       host: "localhost",
