@@ -1,4 +1,4 @@
-const Store = artifacts.require("RASC_Store")
+const Store = artifacts.require("RASC_StoreTest")
 
 contract("Testing Store contract", async (accounts) => {
     it("create item test", async() => {
@@ -37,15 +37,6 @@ contract("Testing Store contract", async (accounts) => {
         let instance = await Store.deployed()
         let itemsCountBefore = await instance.getItemsCount.call()
         await instance.createItem("http://test2/link/", "title", "some description ...", 12 * 2, "Yurii", 5,  "category1,subcategory,sub0,sub1,sub2;category2,subcategory2,v1,v2,v3", "tag1,tag2,tag3", {from: accounts[3]})
-        let itemsCount = await instance.getItemsCount.call()
-        
-        assert.equal(itemsCount.toNumber(), itemsCountBefore.toNumber() + 1, "cannot create item")
-    })
-    ///????????????????????
-    it("create item without categories test", async() => {
-        let instance = await Store.deployed()
-        let itemsCountBefore = await instance.getItemsCount.call()
-        await instance.createItem("http://test2/link/", "title", "some description ...", 12 * 2, "Yurii", 5,  "", "tag1,tag2,tag3", {from: accounts[3]})
         let itemsCount = await instance.getItemsCount.call()
         
         assert.equal(itemsCount.toNumber(), itemsCountBefore.toNumber() + 1, "cannot create item")
@@ -101,20 +92,7 @@ contract("Testing Store contract", async (accounts) => {
         assert.equal(subcategory1.toString(), "subcategory1", "incorrect subcategory")
         assert.equal(subcategory2.toString(), "subcategory2", "incorrect subcategory")
     })
-    // it("getItemPrice for subcategories test", async() => {
-    //     let instance = await Store.deployed()
-    //     let itemPrice = (await instance.getItemPrice.call(0, [], [])).toNumber()
-    //     let price1 = (await instance.getItemPrice.call(0, [0], [0])).toNumber()
-    //     assert.equal(price1, itemPrice / 2.0, "incorrect price")
-    //     let price2 = (await instance.getItemPrice.call(0, [1], [0])).toNumber()
-    //     assert.equal(price2, itemPrice / 3.0, "incorrect price")
-    //     let price3 = (await instance.getItemPrice.call(0, [0, 1], [0, 0])).toNumber()
-    //     assert.equal(price3, itemPrice / 3.0 / 2.0, "incorrect price")
-    //     let price4 = (await instance.getItemPrice.call(0, [0, 0], [0, 1])).toNumber()
-    //     assert.equal(price4, itemPrice , "incorrect price")
-    //     let price5 = (await instance.getItemPrice.call(0, [0, 1, 1], [0, 0, 1])).toNumber()
-    //     assert.equal(price5, itemPrice / 3.0, "incorrect price")
-    // })
+    
     it("getStoreItems all test", async() => {
         let instance = await Store.deployed()
         let count = (await instance.getItemsCount.call()).toNumber()
@@ -150,13 +128,44 @@ contract("Testing Store contract", async (accounts) => {
     })
     it("convertStringToArray1", async() => {
         let instance = await Store.deployed()
-        let s = await instance.convertStringToArray.call("asdasd sdasdasd 1111 23232 234323 dsdad", "  ")
+        let s = await instance.convertStringToArrayTest.call("asdasd sdasdasd 1111 23232 234323 dsdad", "  ")
         assert.equal(s.toString(), "asdasd sdasdasd 1111 23232 234323 dsdad", "incorrect lib " + s.toString())
     })
     it("convertStringToArray0", async() => {
         let instance = await Store.deployed()
-        let s = await instance.convertStringToArray.call("", "  ")
+        let s = await instance.convertStringToArrayTest.call("", "  ")
         assert.equal(s.toString(), "empty_array", "incorrect lib " + s.toString())
+    })
+    ///????????????????????
+    it("create item without categories test", async() => {
+        let instance = await Store.deployed()
+        let itemsCountBefore = await instance.getItemsCount.call()
+        await instance.createItem("http://test2/link/", "title", "some description ...", 12 * 2, "Yurii", 5,  "", "tag1,tag2,tag3", {from: accounts[3]})
+        let itemsCount = await instance.getItemsCount.call()
+        
+        assert.equal(itemsCount.toNumber(), itemsCountBefore.toNumber() + 1, "cannot create item")
+    })
+    it("get item price without categories", async() => {
+        let instance = await Store.deployed()
+        await instance.createItem("http://test2/link/", "title", "some description ...", 12 * 2, "Yurii", 5,  "", "tag1,tag2,tag3", {from: accounts[3]})
+        let itemsCount = (await instance.getItemsCount.call()).toNumber()
+        let itemPrice = (await instance.getPriceTest.call(itemsCount - 1, [], [])).toNumber()
+        assert.equal(itemPrice, 24, "incorrect price")
+    })
+    it("getItemPrice for subcategories test", async() => {
+        let instance = await Store.deployed()
+        await instance.createItem("http://test/link/", "item10", "item description", 12, "Yurii", 5, "cat0,v1,v2,v3;cat1,v1,v2;cat2,v,vv", "", {from: accounts[0]})
+        let itemIndex = (await instance.getItemsCount.call()).toNumber() - 1
+        let price1 = (await instance.getPriceTest.call(itemIndex, [0, 1, 1, 2, 2], [0, 0, 1, 0, 1])).toNumber()
+        assert.equal(price1, 12 / 3.0, "incorrect price 1")
+        // let price2 = (await instance.getPriceTest.call(0, [1], [0])).toNumber()
+        // assert.equal(price2, itemPrice / 3.0, "incorrect price 2")
+        // let price3 = (await instance.getPriceTest.call(0, [0, 1], [0, 0])).toNumber()
+        // assert.equal(price3, itemPrice / 3.0 / 2.0, "incorrect price 3")
+        // let price4 = (await instance.getPriceTest.call(0, [0, 0], [0, 1])).toNumber()
+        // assert.equal(price4, itemPrice , "incorrect price 4")
+        // let price5 = (await instance.getPriceTest.call(0, [0, 1, 1], [0, 0, 1])).toNumber()
+        // assert.equal(price5, itemPrice / 3.0, "incorrect price 5")
     })
     // it("convertStringToArray2", async() => {
     //     let instance = await Store.deployed()
