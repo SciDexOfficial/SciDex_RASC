@@ -137,23 +137,6 @@ contract RASC_Item {
     function getItemsCount() public view returns(uint count) {
         count = items.length;
     }
-    // function getItemPurchaseInfo(uint index) public view returns(
-    //     string memory data,
-    //     uint[] memory purchasedCategories,
-    //     uint[] memory purchasedSubcategories) {
-    //     require(items.length > index);
-    //     data = "";
-    //     Item memory item = items[index];
-    //     uint categoriesCount = itemsCategories[index].length;
-    //     uint[] memory subcategoriesCount = new uint[](categoriesCount);
-    //     for (uint i = 0; i < categoriesCount; i++) {
-    //         subcategoriesCount[i] = itemsSubcategories[index][i].length;
-    //     }
-    //     if (usersItemsPurchase[msg.sender].contains(index) == true) {
-    //         data = item.data;
-    //         (purchasedSubcategories, purchasedCategories) = getItemPusrchaseSubcategories(msg.sender, index);
-    //     }
-    // }
     function getItemInfo(uint index) public view returns(
         // string memory title,
         // string memory description,
@@ -248,59 +231,4 @@ contract RASC_Item {
             }
         }
     }
-    //test functions
-    function convertStringToArrayTest(string memory str, string delim) public pure returns(string memory s) {
-        string[] memory arr = str.split(delim);
-        if (arr.length == 0) {
-            s = "empty_array";
-        } else {
-            s = arr[0];
-        }
-    }
-    function getPriceTest(
-        uint itemIndex, 
-        uint[] memory categories, 
-        uint[] memory subcategories) public view returns(uint price) {
-        price = getItemPrice(itemIndex, categories, subcategories); 
-    }
-    // mapping (address => mapping(uint => bool)) usersItems;
-    // mapping (uint => address[]) itemsBuyers;
-
-    // function createItem(string data, uint price) public returns(uint index) {
-    //     Item memory item = Item(data, price);
-    //     index = items.push(item) - 1;
-    //     itemsOwners[index].push(msg.sender);
-
-    //     emit ItemCreated(index);
-    // }
-    
-    
-    // function getItemInfo(uint index) public view returns(string memory data, uint price, bool isOwner) {
-    //     Item memory item = items[index];
-    //     if (checkUserHasAccessToItemData(index, msg.sender) == true) {
-    //         price = item.price;
-    //         data = item.data;
-    //         isOwner = false;
-    //     } else if (checkUserIsItemOwner(index, msg.sender) == true) {
-    //         price = item.price;
-    //         data = item.data;
-    //         isOwner = true;
-    //     } else {
-    //         price = item.price;
-    //         data = "";
-    //         isOwner = false;
-    //     }
-    // }
-    // function checkUserIsItemOwner(uint itemIndex, address user) public view returns(bool) {
-    //     address[] memory owners = itemsOwners[itemIndex];
-    //     return owners.contains(user);
-    // }
-    // function checkUserHasAccessToItemData(uint itemIndex, address user) internal view returns(bool) {
-    //     return usersItems[user][itemIndex];
-    // }
-
-    // function giveAccessToItemData(uint itemIndex, address user) internal {
-    //     usersItems[user][itemIndex] = true;
-    //     itemsBuyers[itemIndex].push(user);
-    // }
 }
