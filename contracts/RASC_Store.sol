@@ -6,7 +6,7 @@ import "./RASC_Transaction.sol";
 
 contract RASC_Store is RASC_Transaction, RASC_User {
     using SafeMath for uint;
-    
+
     function buyItem(uint itemIndex, uint[] memory categories, uint[] memory subcategories) payable public {
         //create transaction
         uint price = getItemPrice(itemIndex, categories, subcategories);

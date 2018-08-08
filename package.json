@@ -2,6 +2,7 @@
   "name": "solidity",
   "version": "1.0.0",
   "dependencies": {
+    "fast-csv": "^2.4.1",
     "truffle-hdwallet-provider": "^0.0.5"
   }
 }

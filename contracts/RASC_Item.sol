@@ -29,7 +29,7 @@ contract RASC_Item {
     event CategoryAdded(uint itemIndex, uint categoryIndex, string category);
     event SubcategoryAdded(uint itemIndex, uint categoryIndex, uint subcategoryIndex, string subcategory);
     event CategoriesAndSubcategoriesDeleted(uint itemIndex);
-
+    event AddedItemPurchaseToUser(uint itemIndex, address user, uint[] categories, uint[] subcategories);
     //basic data item
     struct Item {
         string data;
@@ -132,6 +132,7 @@ contract RASC_Item {
                 purchaseSubcategories[user][itemIndex][categories[i]].push(subcategories[i]);
             }
         }
+        emit AddedItemPurchaseToUser(itemIndex, user, categories, subcategories);
     }
     
     function getItemsCount() public view returns(uint count) {
