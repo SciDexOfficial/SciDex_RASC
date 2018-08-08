@@ -47,6 +47,10 @@ contract RASC_Store is RASC_Transaction, RASC_User {
         uint index = from;
         while (i < to - from) {
             Item memory item = items[index];
+            if (item.isDeleted == true) {
+                index++;
+                continue;
+            }
             //TODO: check if user has access to item
             prices[i] = item.price;
             sellers[i] = item.seller;

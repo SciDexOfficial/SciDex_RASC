@@ -30,11 +30,13 @@ contract RASC_Item {
     event SubcategoryAdded(uint itemIndex, uint categoryIndex, uint subcategoryIndex, string subcategory);
     event CategoriesAndSubcategoriesDeleted(uint itemIndex);
     event AddedItemPurchaseToUser(uint itemIndex, address user, uint[] categories, uint[] subcategories);
+    event ItemWasDeleted(uint itemIndex);
     //basic data item
     struct Item {
         string data;
         uint price;
         address seller;
+        bool isDeleted;
         // string title;
         // string description;
         // string author;
@@ -64,13 +66,18 @@ contract RASC_Item {
         uint rating,
         string memory categories,
         string memory tags) public returns(uint index) {
-        Item memory item = Item(data, price, msg.sender);//, title, description, author, rating, tags, categories);
+        Item memory item = Item(data, price, msg.sender, false);//, title, description, author, rating, tags, categories);
         index = items.push(item) - 1;
         usersItems[msg.sender].push(index);
         addItemCategoriesAndSubcategories(index, categories);
         emit ItemCreated(index, title, description, author, msg.sender, price, rating, categories, tags);
     }
-
+    function deleteItem(uint index) public {
+        Item memory item = items[index];
+        require(item.seller == msg.sender);
+        items[index].isDeleted = true;
+        emit ItemWasDeleted(index);
+    }
     function removeAllCategoriesAndSubcategories(uint itemIndex) public {
         string[] memory categories = itemsCategories[itemIndex];
         for (uint i = 0; i < categories.length; i++) {
