@@ -102,7 +102,7 @@ contract("Testing Store contract", async (accounts) => {
     it("buy item test", async() => {
         let instance = await Store.deployed()
         let info = await instance.getItemInfo.call(1)
-        await instance.buyItem(1, [0, 0, 1], [0, 1, 0], {from: accounts[1], value: info[1]})
+        await instance.buyItem(1, [0, 0, 1], [0, 1, 0], {from: accounts[1], value: 0})
         let items = await instance.getBoughtItems.call({from: accounts[1]})
         assert.equal(items[0].toNumber(), 1, "incorrect value " + items[0].toNumber())
     })

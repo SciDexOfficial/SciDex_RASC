@@ -79,12 +79,12 @@ contract RASC_Transaction is RASC_Item, Ownable {
     }
 
     function payTransaction(uint transactionIndex) payable public {
-        require(msg.value >= transaction.amount);
+        // require(msg.value >= transaction.amount);
         Transaction storage transaction = transactions[transactionIndex];
         transaction.isPaid = true;
-        if (msg.value - transaction.amount > 0) {
-            msg.sender.transfer(msg.value - transaction.amount);
-        }
+        // if (msg.value - transaction.amount > 0) {
+        //     msg.sender.transfer(msg.value - transaction.amount);
+        // }
 
     }
     function convertTransactionCategoriesToArray(uint index) private view returns(uint[] memory values, uint[] memory valuesKeys) {
@@ -117,7 +117,7 @@ contract RASC_Transaction is RASC_Item, Ownable {
         require(transaction.arbiter == address(0));
 
         transactions[transactionIndex].status = TransactionStatus.confirmed;
-        transaction.seller.transfer(transaction.amount);
+        // transaction.seller.transfer(transaction.amount);
 
         addItemPurchaseToUser(transaction.itemIndex, msg.sender, categories, subcategories);
         emit TransactionChangedStatus(transactionIndex, TransactionStatus.confirmed, msg.sender);

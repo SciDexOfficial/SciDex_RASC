@@ -23,7 +23,8 @@ contract RASC_Item {
         uint price,
         uint rating, 
         string categories,
-        string tags
+        string domainsAndTags,
+        uint createdAt
     );
 
     event CategoryAdded(uint itemIndex, uint categoryIndex, string category);
@@ -65,12 +66,12 @@ contract RASC_Item {
         string author, 
         uint rating,
         string memory categories,
-        string memory tags) public returns(uint index) {
+        string memory domainsAndTags) public returns(uint index) {
         Item memory item = Item(data, price, msg.sender, false);//, title, description, author, rating, tags, categories);
         index = items.push(item) - 1;
         usersItems[msg.sender].push(index);
         addItemCategoriesAndSubcategories(index, categories);
-        emit ItemCreated(index, title, description, author, msg.sender, price, rating, categories, tags);
+        emit ItemCreated(index, title, description, author, msg.sender, price, rating, categories, domainsAndTags, now);
     }
     function deleteItem(uint index) public {
         Item memory item = items[index];
@@ -85,6 +86,12 @@ contract RASC_Item {
         }
         delete itemsCategories[itemIndex];
         emit CategoriesAndSubcategoriesDeleted(itemIndex);
+    }
+
+    function changeItemPrice(uint itemIndex, uint price) public {
+        Item storage item = items[itemIndex];
+        require(item.seller == msg.sender);
+        item.price = price;
     }
 
     function addCategory(uint itemIndex, string category) public returns(uint index) {

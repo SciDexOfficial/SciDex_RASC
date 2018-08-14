@@ -10,7 +10,7 @@ contract RASC_Store is RASC_Transaction, RASC_User {
     function buyItem(uint itemIndex, uint[] memory categories, uint[] memory subcategories) payable public {
         //create transaction
         uint price = getItemPrice(itemIndex, categories, subcategories);
-        require(msg.value >= price);
+        // require(msg.value >= price);
         
         uint transactionIndex = createTransaction(
             msg.sender, 
