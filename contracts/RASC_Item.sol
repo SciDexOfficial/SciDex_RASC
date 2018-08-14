@@ -32,6 +32,7 @@ contract RASC_Item {
     event CategoriesAndSubcategoriesDeleted(uint itemIndex);
     event AddedItemPurchaseToUser(uint itemIndex, address user, uint[] categories, uint[] subcategories);
     event ItemWasDeleted(uint itemIndex);
+    event ItemPriceUpdated(uint itemIndex, uint price);
     //basic data item
     struct Item {
         string data;
@@ -92,6 +93,7 @@ contract RASC_Item {
         Item storage item = items[itemIndex];
         require(item.seller == msg.sender);
         item.price = price;
+        emit ItemPriceUpdated(itemIndex, price);
     }
 
     function addCategory(uint itemIndex, string category) public returns(uint index) {
