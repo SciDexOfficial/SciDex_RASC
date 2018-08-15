@@ -4,7 +4,7 @@ contract("Testing Store contract", async (accounts) => {
     it("create item test", async() => {
         let instance = await Store.deployed()
         let itemsCountBefore = await instance.getItemsCount.call()
-        await instance.createItem("http://test/link/", "item1", "item description", 12, "Yurii", 5, "cat0,v1,v2,v3;cat1,v1,v2;cat2,v,vv", "", {from: accounts[0]})
+        await instance.createItem("http://test/link/", "item1", "item description", 12, "Yurii", 510, "cat0,v1,v2,v3;cat1,v1,v2;cat2,v,vv", "", {from: accounts[0]})
         let itemsCount = await instance.getItemsCount.call()
         let category0 = (await instance.getItemCategory.call(0, 0)).toString()
         let category1 = (await instance.getItemCategory.call(0, 1)).toString()
@@ -36,7 +36,7 @@ contract("Testing Store contract", async (accounts) => {
     it("create second item test", async() => {
         let instance = await Store.deployed()
         let itemsCountBefore = await instance.getItemsCount.call()
-        await instance.createItem("http://test2/link/", "title", "some description ...", 12 * 2, "Yurii", 5,  "category1,subcategory,sub0,sub1,sub2;category2,subcategory2,v1,v2,v3", "tag1,tag2,tag3", {from: accounts[3]})
+        await instance.createItem("http://test2/link/", "title", "some description ...", 12 * 2, "Yurii", 590,  "category1,subcategory,sub0,sub1,sub2;category2,subcategory2,v1,v2,v3", "tag1,tag2,tag3", {from: accounts[3]})
         let itemsCount = await instance.getItemsCount.call()
         
         assert.equal(itemsCount.toNumber(), itemsCountBefore.toNumber() + 1, "cannot create item")
@@ -63,7 +63,7 @@ contract("Testing Store contract", async (accounts) => {
     it("getItemCategory test", async() => {
         let instance = await Store.deployed()
         let index = (await instance.getItemsCount.call()).toNumber()
-        await instance.createItem("http://test2/link1/", "title123", "item description", 33, "Y.Yashchenko", 5, "category1,subcategory;category2,subcategory2", "tag1,tag2", {from: accounts[3]})
+        await instance.createItem("http://test2/link1/", "title123", "item description", 33, "Y.Yashchenko", 580, "category1,subcategory;category2,subcategory2", "tag1,tag2", {from: accounts[3]})
         let category1 = await instance.getItemCategory.call(index, 0)
         let category2 = await instance.getItemCategory.call(index, 1)
         assert.equal(category1.toString(), "category1", "incorrect category")
@@ -86,7 +86,7 @@ contract("Testing Store contract", async (accounts) => {
     it("getItemSubcategory test", async() => {
         let instance = await Store.deployed()
         let index = (await instance.getItemsCount.call()).toNumber()
-        await instance.createItem("http://test2/link1/", "noname", "noname description", 33, "Yashchenko", 4, "category1,subcategory1,subcategory2;category2,subcategory2", "tag1", {from: accounts[3]})
+        await instance.createItem("http://test2/link1/", "noname", "noname description", 33, "Yashchenko", 430, "category1,subcategory1,subcategory2;category2,subcategory2", "tag1", {from: accounts[3]})
         let subcategory1 = await instance.getItemSubcategory.call(index, 0, 0)
         let subcategory2 = await instance.getItemSubcategory.call(index, 0, 1)
         assert.equal(subcategory1.toString(), "subcategory1", "incorrect subcategory")
@@ -140,21 +140,21 @@ contract("Testing Store contract", async (accounts) => {
     it("create item without categories test", async() => {
         let instance = await Store.deployed()
         let itemsCountBefore = await instance.getItemsCount.call()
-        await instance.createItem("http://test2/link/", "title", "some description ...", 12 * 2, "Yurii", 5,  "", "tag1,tag2,tag3", {from: accounts[3]})
+        await instance.createItem("http://test2/link/", "title", "some description ...", 12 * 2, "Yurii", 510,  "", "tag1,tag2,tag3", {from: accounts[3]})
         let itemsCount = await instance.getItemsCount.call()
         
         assert.equal(itemsCount.toNumber(), itemsCountBefore.toNumber() + 1, "cannot create item")
     })
     it("get item price without categories", async() => {
         let instance = await Store.deployed()
-        await instance.createItem("http://test2/link/", "title", "some description ...", 12 * 2, "Yurii", 5,  "", "tag1,tag2,tag3", {from: accounts[3]})
+        await instance.createItem("http://test2/link/", "title", "some description ...", 12 * 2, "Yurii", 510,  "", "tag1,tag2,tag3", {from: accounts[3]})
         let itemsCount = (await instance.getItemsCount.call()).toNumber()
         let itemPrice = (await instance.getPriceTest.call(itemsCount - 1, [], [])).toNumber()
         assert.equal(itemPrice, 24, "incorrect price")
     })
     it("getItemPrice for subcategories test", async() => {
         let instance = await Store.deployed()
-        await instance.createItem("http://test/link/", "item10", "item description", 12, "Yurii", 5, "cat0,v1,v2,v3;cat1,v1,v2;cat2,v,vv", "", {from: accounts[0]})
+        await instance.createItem("http://test/link/", "item10", "item description", 12, "Yurii", 510, "cat0,v1,v2,v3;cat1,v1,v2;cat2,v,vv", "", {from: accounts[0]})
         let itemIndex = (await instance.getItemsCount.call()).toNumber() - 1
         let price1 = (await instance.getPriceTest.call(itemIndex, [0, 1, 1, 2, 2], [0, 0, 1, 0, 1])).toNumber()
         assert.equal(price1, 12 / 3.0, "incorrect price 1")

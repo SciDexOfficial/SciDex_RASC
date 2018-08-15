@@ -2,13 +2,13 @@ const Store = artifacts.require("RASC_Store")
 
 var TestData = require("./TestData")
 let totalCount = 100
-let address = '0xe58fa2c89f067cc7fced628a5490a5b200cb645a'
+let address = '0x61b79d1052154a32717fd318ca8b6c76c62bb2e7'
 contract("Filling data", async (accounts) => {
     for (var j = 0; j < totalCount; j++) {
         let i = j
         it("test data " + i, async() => {
             let instance = await Store.at(address)//.deployed()
-            await instance.createItem("http://test/link/" + i, TestData.title[i], TestData.description[i], 0, TestData.author[i], TestData.rating[i], TestData.categories[i], (TestData.domain[i] + ";" + TestData.tagsseperatedby[i]).replace(/, /g, ","))
+            await instance.createItem("http://test/link/" + i, TestData.title[i], TestData.description[i], TestData.price[i], TestData.author[i], TestData.size[i], TestData.categories[i], (TestData.domain[i] + ";" + TestData.tagsseperatedby[i]).replace(/, /g, ","))
             console.log("done: " + TestData.index[i]);
             // console.log(TestData.title[i])
             // console.log(TestData.description[i])
