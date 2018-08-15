@@ -21,7 +21,7 @@ contract RASC_Item {
         string author, 
         address owner, 
         uint price,
-        uint rating, 
+        uint size,
         string categories,
         string domainsAndTags,
         uint createdAt
@@ -65,14 +65,14 @@ contract RASC_Item {
         string description, 
         uint price, 
         string author, 
-        uint rating,
+        uint size,
         string memory categories,
         string memory domainsAndTags) public returns(uint index) {
         Item memory item = Item(data, price, msg.sender, false);//, title, description, author, rating, tags, categories);
         index = items.push(item) - 1;
         usersItems[msg.sender].push(index);
         addItemCategoriesAndSubcategories(index, categories);
-        emit ItemCreated(index, title, description, author, msg.sender, price, rating, categories, domainsAndTags, now);
+        emit ItemCreated(index, title, description, author, msg.sender, price, size, categories, domainsAndTags, now);
     }
     function deleteItem(uint index) public {
         Item memory item = items[index];

@@ -6,6 +6,7 @@ import "./RASC_Transaction.sol";
 
 contract RASC_Store is RASC_Transaction, RASC_User {
     using SafeMath for uint;
+    event ItemBought(uint itemIndex, uint transactionIndex, uint[] categories, uint[] subcategories);
 
     function buyItem(uint itemIndex, uint[] memory categories, uint[] memory subcategories) payable public {
         //create transaction
@@ -23,6 +24,7 @@ contract RASC_Store is RASC_Transaction, RASC_User {
             );
         payTransaction(transactionIndex);
         autoconfirmTransaction(transactionIndex, categories, subcategories);
+        emit ItemBought(itemIndex, transactionIndex, categories, subcategories);
     }
 
     function getStoreItems(uint from, uint count) public view returns(

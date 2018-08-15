@@ -7,7 +7,16 @@ contract RASC_Transaction is RASC_Item, Ownable {
     enum TransactionStatus {created, canceled, confirmed}
     //events
     event TransactionChangedStatus(uint transactionIndex, TransactionStatus status, address executer);
-    event TransactingCreated(uint transactionIndex);
+    event TransactingCreated(
+        uint transactionIndex,
+        address buyer,
+        address seller, 
+        address arbiter, 
+        uint itemIndex, 
+        uint amount,
+        uint[] categories, 
+        uint[] subcategories
+    );
     //item transaction from seller to buyer
     struct Transaction {
         address arbiter;
@@ -73,7 +82,7 @@ contract RASC_Transaction is RASC_Item, Ownable {
             }
         }
 
-        emit TransactingCreated(index);
+        emit TransactingCreated(index, buyer, seller, arbiter, itemIndex, amount, categories, subcategories);
         
         return index;
     }
