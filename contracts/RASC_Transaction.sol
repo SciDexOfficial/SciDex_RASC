@@ -55,7 +55,7 @@ contract RASC_Transaction is RASC_Item, Ownable {
         uint[] memory categories, 
         uint[] memory subcategories) internal returns(uint) 
         {
-        Item memory item = items[itemIndex];
+        Item memory item = getItemObject(itemIndex);
         address seller = item.seller;
         require(categories.length == subcategories.length);
         require(buyer != address(0));
@@ -115,7 +115,7 @@ contract RASC_Transaction is RASC_Item, Ownable {
     function getTransactionSubcategoriesCount(uint transactionIndex) private view returns(uint categoriesCount, uint count) {
         count = 0;
         Transaction memory transaction = transactions[transactionIndex];
-        categoriesCount = itemsCategories[transaction.itemIndex].length;
+        categoriesCount = getItemCategoriesCount(transaction.itemIndex);//itemsCategories[transaction.itemIndex].length;
         for (uint i = 0; i < categoriesCount; i++) {
             count += transactionsCategories[transactionIndex][i].length;
         }

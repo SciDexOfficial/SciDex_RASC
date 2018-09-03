@@ -6,9 +6,12 @@ import "./RASC_Transaction.sol";
 
 contract RASC_Store is RASC_Transaction, RASC_User {
     using SafeMath for uint;
+    using ArrayUtils for uint[];
+
     event ItemBought(uint itemIndex, uint transactionIndex, uint[] categories, uint[] subcategories);
 
     function buyItem(uint itemIndex, uint[] memory categories, uint[] memory subcategories) payable public {
+        require(canBuyCategoriesAndSubcategories(itemIndex, msg.sender, categories, subcategories));
         //create transaction
         uint price = getItemPrice(itemIndex, categories, subcategories);
         // require(msg.value >= price);
@@ -34,12 +37,13 @@ contract RASC_Store is RASC_Transaction, RASC_User {
         uint[] memory prices) 
         {
         require(count > 0);
-        require(from < items.length);
+        uint itemsCount = getItemsCount();
+        require(from < itemsCount);
         uint to = from + count;
         uint correctCount = count;
     
-        if (to > items.length) {
-            to = items.length;
+        if (to > itemsCount) {
+            to = itemsCount;
             correctCount = to - from;
         }
         indexies = new uint[](correctCount);
@@ -48,17 +52,26 @@ contract RASC_Store is RASC_Transaction, RASC_User {
         uint i = 0;
         uint index = from;
         while (i < to - from) {
-            Item memory item = items[index];
+            Item memory item = getItemObject(index);//items[index];
             if (item.isDeleted == true) {
                 index++;
                 continue;
             }
-            //TODO: check if user has access to item
-            prices[i] = item.price;
-            sellers[i] = item.seller;
-            indexies[i] = index;
-            index++;
-            i++;
+            if (item.isPublic == false) {
+                //TODO: check if user has access to item
+                prices[i] = item.price;
+                sellers[i] = item.seller;
+                indexies[i] = index;
+                index++;
+                i++;
+            } else {
+                prices[i] = item.price;
+                sellers[i] = item.seller;
+                indexies[i] = index;
+                index++;
+                i++;
+            }
+            
         }
 
         nextPageIndex = index;
@@ -70,6 +83,19 @@ contract RASC_Store is RASC_Transaction, RASC_User {
 
     function getCreatedItems() public view returns(uint[] memory result) {
         result = usersItems[msg.sender];
+    }
+
+    function canBuyCategoriesAndSubcategories(
+        uint itemIndex, 
+        address user, 
+        uint[] memory categories, 
+        uint[] memory subcategories) private view returns(bool) {
+        for (uint i = 0; i < subcategories.length; i++) {
+            uint[] memory subcat = purchaseSubcategories[user][itemIndex][categories[i]];
+            if (subcat.contains(subcategories[i]) == false) {
+                return true;
+            }
+        }
     }
     //return all items availabel for sender
     // function getItemsGroupIds() public view returns(uint[] memory indexes) {

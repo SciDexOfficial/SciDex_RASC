@@ -39,6 +39,7 @@ contract RASC_Item {
         uint price;
         address seller;
         bool isDeleted;
+        bool isPublic;
         // string title;
         // string description;
         // string author;
@@ -48,10 +49,10 @@ contract RASC_Item {
     }
     // mapping (uint => string[]) itemsTags;
 
-    Item[] items;
+    Item[] private items;
     
-    mapping (uint => string[]) itemsCategories;
-    mapping (uint => mapping(uint => string[])) itemsSubcategories;
+    mapping (uint => string[]) private itemsCategories;
+    mapping (uint => mapping(uint => string[])) private itemsSubcategories;
 
     mapping (address => uint[]) usersItems;
 
@@ -68,7 +69,7 @@ contract RASC_Item {
         uint size,
         string memory categories,
         string memory domainsAndTags) public returns(uint index) {
-        Item memory item = Item(data, price, msg.sender, false);//, title, description, author, rating, tags, categories);
+        Item memory item = Item(data, price, msg.sender, false, true);//, title, description, author, rating, tags, categories);
         index = items.push(item) - 1;
         usersItems[msg.sender].push(index);
         addItemCategoriesAndSubcategories(index, categories);
@@ -126,12 +127,18 @@ contract RASC_Item {
         require(subcategories.length == categories.length);
         uint categoriesCount = itemsCategories[itemIndex].length;
         uint[] memory subcategoriesCount = new uint[](categoriesCount);
+        uint price = items[itemIndex].price;
 
+        if (categoriesCount == 0) {
+            return price;
+        }
         for (uint i = 0; i < categories.length; i++) {
             subcategoriesCount[categories[i]]++;
         }
-        uint price = items[itemIndex].price;
         for (uint j = 0; j < categoriesCount; j++) {
+            if (itemsSubcategories[itemIndex][j].length == 0) {
+                continue;
+            }
             require(subcategoriesCount[j] > 0);
             price = price.mul(subcategoriesCount[j]).div(itemsSubcategories[itemIndex][j].length);
         }
@@ -247,5 +254,8 @@ contract RASC_Item {
                 }
             }
         }
+    }
+    function getItemObject(uint index) internal view returns (Item memory item) {
+        item = items[index];
     }
 }

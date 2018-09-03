@@ -11,16 +11,18 @@ contract RASC_User {
         address wallet;
     }
     //all registered users
-    User[] users;
+    User[] private users;
+    //user wallets
+    mapping(uint => address[]) private usersWallets;
 
     //key0:user index
     //key1:type of the field
     //value:field's value
-    mapping(uint => mapping(uint => uint)) usersFields;
+    mapping(uint => mapping(uint => uint)) private usersFields;
     
     //key: user address 
     //value: index of user in the users array
-    mapping(address => uint) usersIndexies;
+    mapping(address => uint) private usersIndexies;
     
     //create new user
     function createUser(string name) public returns(uint index) {

@@ -23,6 +23,12 @@ module.exports = {
       network_id: "4",
       gas: 6712390
     },   
+    rinkeby1: {
+      provider : () => new HDWalletProvider(mnemonic, "https://rinkeby.infura.io/3vj9Xnohf6SSZo69i0aH", 1), // TODO: change with our own node addres
+      from: "0x2fb2bb7ca4c2bf0203d844ca1b7705e24c2c3ec9".toLowerCase(),
+      network_id: "4",
+      gas: 6712390
+    }, 
     main: {
       provider : () => new HDWalletProvider(mnemonic, "https://mainnet.infura.io/3vj9Xnohf6SSZo69i0aH"), // TODO: change with our own node addres
       from: fromAddress.toLowerCase(),
