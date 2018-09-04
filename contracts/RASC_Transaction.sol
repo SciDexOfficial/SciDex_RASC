@@ -32,7 +32,7 @@ contract RASC_Transaction is RASC_Item, Ownable {
     //transaction categories
     mapping(uint => mapping(uint => uint[])) transactionsCategories;
     //store all transactions
-    Transaction[] transactions;
+    Transaction[] private transactions;
 
     //mapping transaction index with seller address
     mapping(address => uint[]) sellersTransactions;
