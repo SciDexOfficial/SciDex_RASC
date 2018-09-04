@@ -22,7 +22,9 @@ module.exports = function(deployer, network) {
   deployer.link(ArrayUtils, RASC_Item);
 
   deployer.link(SafeMath, RASC_Store);
-
+  
+  deployer.link(ArrayUtils, RASC_User);
+  
   deployer.deploy(RASC_Access);
   deployer.deploy(RASC_UserFields);
   deployer.deploy(RASC_User);
