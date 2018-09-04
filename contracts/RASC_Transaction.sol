@@ -170,7 +170,7 @@ contract RASC_Transaction is RASC_Item, Ownable {
         Transaction memory transaction = getTransaction(index);
         return transaction.itemIndex;
     }
-    function getTransactionCategories(uint transactionIndex) public view returns(uint[], uint[]) {
+    // function getTransactionCategories(uint transactionIndex) public view returns(uint[], uint[]) {
 
-    }
+    // }
 }

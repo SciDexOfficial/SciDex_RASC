@@ -1,10 +1,7 @@
 pragma solidity ^0.4.23;
 
-import "./ArrayUtils.sol";
-
 contract RASC_User {
     //events
-    using ArrayUtils for address[];
 
     event UserCreated(uint userIndex, string name, string nickName, string description, address wallet, uint infoHash);
     event UserAddedWallet(uint userIndex, address wallet);
@@ -34,13 +31,9 @@ contract RASC_User {
     //create new user
     function createUser(string name, string nickName, string description, uint infoHash) public returns(uint index) {
         //check if user exist
-        require(usersIndexies[msg.sender] == 0);
-        
-        //check with first user
-        if (users.length > 0) {
-            require(users[0].wallet != msg.sender);
-        }
-        
+        bool exist;
+        (exist,) = getUserIndex(msg.sender);
+        require(exist == false);
         User memory user = User(name, nickName, description, msg.sender, infoHash);
         index = users.push(user) - 1;
         usersIndexies[msg.sender] = index;
@@ -56,11 +49,12 @@ contract RASC_User {
     //return user from address if exist
     function getUser(address userAddress) internal view returns(User) {
         uint userIndex;
-        (, userIndex) = getUserIndex(userAddress);
+        bool exist;
+        (exist, userIndex) = getUserIndex(userAddress);
         return users[userIndex];
     }
     
-    //converting user address to user index
+    // //converting user address to user index
     function getUserIndex(address userAddress) internal view returns(bool exist, uint userIndex) {
         userIndex = usersIndexies[userAddress];
         //check if user exist
@@ -74,8 +68,9 @@ contract RASC_User {
         }
     }
     function getMyIndex() public view returns(uint index) {
-        
-        (, index) = getUserIndex(msg.sender);
+        bool exist;
+        (exist, index) = getUserIndex(msg.sender);
+        require(exist);
     }
     //get value for current field type
     function getValueForAccessType(uint userId, uint fieldType) internal view returns(uint) {
@@ -85,7 +80,8 @@ contract RASC_User {
     function updateMyProfile(uint[] memory types, uint[] memory values) public {
         require(types.length == values.length);
         uint userIndex;
-        (, userIndex) = getUserIndex(msg.sender);
+        bool exist;
+        (exist, userIndex) = getUserIndex(msg.sender);
         User memory user = users[userIndex];
         require(user.wallet == msg.sender);
 
@@ -109,11 +105,16 @@ contract RASC_User {
         emit UserAddedWallet(index, msg.sender);
     }
 
-    function getMyWallets() public view returns(address[] memory wallets){
+    // function 
+    function getMyWallets() public view returns(address[] memory) {
         uint index;
         bool exist;
         (exist, index) = getUserIndex(msg.sender);
         require(exist);
-        wallets = usersWallets[index];
+        return usersWallets[index];
+    }
+
+    function test1(uint a) public pure returns(uint) {
+        return a + a;
     }
 }

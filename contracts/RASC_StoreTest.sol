@@ -1,6 +1,7 @@
 pragma solidity ^0.4.23;
 
 import "./RASC_Store.sol";
+import "./RASC_User.sol";
 
 contract RASC_StoreTest is RASC_Store {
     //test functions
@@ -17,5 +18,14 @@ contract RASC_StoreTest is RASC_Store {
         uint[] memory categories, 
         uint[] memory subcategories) public view returns(uint price) {
         price = getItemPrice(itemIndex, categories, subcategories); 
+    }
+    function getOwner() public view returns(address) {
+        return owner;
+    }
+    function getUserContractAddress() public view returns(address) {
+        return userContractAddress;
+    }
+    function test1(uint a) public view returns(uint) {
+        return RASC_User(userContractAddress).test1(a);
     }
 }
