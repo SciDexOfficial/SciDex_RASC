@@ -6,12 +6,16 @@ contract RASC_User {
     //events
     using ArrayUtils for address[];
 
-    event UserCreated(uint userIndex, string name, address wallet);
+    event UserCreated(uint userIndex, string name, string nickName, string description, address wallet, uint infoHash);
+    event UserAddedWallet(uint userIndex, address wallet);
     event UserUpdatedProfile(uint userIndex);
     //basic user description
     struct User {
         string name;
+        string nickName;
+        string description;
         address wallet;
+        uint infoHash;
     }
     //all registered users
     User[] private users;
@@ -28,7 +32,7 @@ contract RASC_User {
     mapping(address => uint) private usersIndexies;
     
     //create new user
-    function createUser(string name) public returns(uint index) {
+    function createUser(string name, string nickName, string description, uint infoHash) public returns(uint index) {
         //check if user exist
         require(usersIndexies[msg.sender] == 0);
         
@@ -37,11 +41,11 @@ contract RASC_User {
             require(users[0].wallet != msg.sender);
         }
         
-        User memory user = User(name, msg.sender);
+        User memory user = User(name, nickName, description, msg.sender, infoHash);
         index = users.push(user) - 1;
         usersIndexies[msg.sender] = index;
         usersWallets[index].push(msg.sender);
-        emit UserCreated(index, name, msg.sender);
+        emit UserCreated(index, name, nickName, description, msg.sender, infoHash);
     }
     function getUserInfo(uint index) public view returns(string memory name, address wallet) {
         User memory user = users[index];
@@ -102,6 +106,7 @@ contract RASC_User {
         require(exist == false);
         usersIndexies[msg.sender] = userIndex;
         usersWallets[userIndex].push(msg.sender);
+        emit UserAddedWallet(index, msg.sender);
     }
 
     function getMyWallets() public view returns(address[] memory wallets){
