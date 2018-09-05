@@ -1,9 +1,8 @@
 pragma solidity ^0.4.23;
 
 import "./RASC_Item.sol";
-import "./Ownable.sol";
 
-contract RASC_Transaction is RASC_Item, Ownable {
+contract RASC_Transaction is RASC_Item {
     enum TransactionStatus {created, canceled, confirmed}
     //events
     event AddedItemPurchaseToUser(uint itemIndex, address user, uint[] categories, uint[] subcategories);
