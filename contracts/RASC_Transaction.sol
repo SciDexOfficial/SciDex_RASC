@@ -6,6 +6,7 @@ import "./Ownable.sol";
 contract RASC_Transaction is RASC_Item, Ownable {
     enum TransactionStatus {created, canceled, confirmed}
     //events
+    event AddedItemPurchaseToUser(uint itemIndex, address user, uint[] categories, uint[] subcategories);
     event TransactionChangedStatus(uint transactionIndex, TransactionStatus status, address executer);
     event TransactionCreated(
         uint transactionIndex,
@@ -29,6 +30,10 @@ contract RASC_Transaction is RASC_Item, Ownable {
         uint createDate;
         uint updateDate;
     }
+
+    mapping (address => uint[]) usersItemsPurchase;
+    mapping (address => mapping (uint => mapping(uint => uint[]))) purchaseSubcategories;
+
     //transaction categories
     mapping(uint => mapping(uint => uint[])) transactionsCategories;
     //store all transactions
@@ -173,4 +178,17 @@ contract RASC_Transaction is RASC_Item, Ownable {
     // function getTransactionCategories(uint transactionIndex) public view returns(uint[], uint[]) {
 
     // }
+
+    function addItemPurchaseToUser(uint itemIndex, address user, uint[] memory categories, uint[] memory subcategories) internal {
+        require(categories.length == subcategories.length);
+        if (usersItemsPurchase[user].contains(itemIndex) == false) {
+            usersItemsPurchase[user].push(itemIndex);
+        }
+        for (uint i = 0; i < categories.length; i++) {
+            if (purchaseSubcategories[user][itemIndex][categories[i]].contains(subcategories[i]) == false) {
+                purchaseSubcategories[user][itemIndex][categories[i]].push(subcategories[i]);
+            }
+        }
+        emit AddedItemPurchaseToUser(itemIndex, user, categories, subcategories);
+    }
 }

@@ -103,4 +103,68 @@ contract RASC_Store is RASC_Transaction {
             }
         }
     }
+    //store's items info 
+
+    function getItemInfo(uint index) public view returns(
+        // string memory title,
+        // string memory description,
+        // string memory author, 
+        string memory data,
+        uint price, 
+        address seller, 
+        uint categoriesCount,
+        // uint rating,
+        // string memory tags,
+        uint[] memory subcategoriesCount,
+        uint[] memory purchasedCategories,
+        uint[] memory purchasedSubcategories
+        ) {
+        Item memory item = getItemObject(index);
+        data = "";
+        // title = item.title;
+        // description = item.description;
+        // author = item.author;
+        // rating = item.rating;
+        // tags = item.tags;
+        price = item.price;
+        seller = item.seller;
+        categoriesCount = getItemCategoriesCount(index);//itemsCategories[index].length;
+        subcategoriesCount = new uint[](categoriesCount);
+        for (uint i = 0; i < categoriesCount; i++) {
+            subcategoriesCount[i] = getItemSubcategoriesCount(index, i);//itemsSubcategories[index][i].length;
+        }
+        if (usersItemsPurchase[msg.sender].contains(index) == true) {
+            data = item.data;
+            (purchasedSubcategories, purchasedCategories) = getItemPusrchaseSubcategories(msg.sender, index);
+        }
+    }
+
+    function getItemPusrchaseSubcategoriesCount(address user, uint index) internal view returns(uint count) {
+        uint categoriesCount = getItemCategoriesCount(index);//itemsCategories[index].length;
+        count = 0;
+        for (uint i = 0; i < categoriesCount; i++) {
+            count += purchaseSubcategories[user][index][i].length;
+        }
+    }
+
+    function getItemPusrchaseSubcategories(
+        address user, 
+        uint index) 
+        internal view returns(
+            uint[] memory subcategories, 
+            uint[] memory categories) {
+        uint categoriesCount = getItemCategoriesCount(index);//itemsCategories[index].length;
+        uint count = getItemPusrchaseSubcategoriesCount(user, index);
+        subcategories = new uint[](count);
+        categories = new uint[](count);
+        uint key = 0;
+        for (uint i = 0; i < categoriesCount; i++) {
+            uint subCount = purchaseSubcategories[user][index][i].length;
+            for (uint j = 0; j < subCount; j++) {
+                subcategories[key] = purchaseSubcategories[user][index][i][j];
+                categories[key] = i;
+                key++;
+            }
+        }
+    }
 }

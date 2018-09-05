@@ -1,11 +1,11 @@
 pragma solidity ^0.4.23;
 
-// import "./RASC_Access.sol";
+import "./Ownable.sol";
 import "./ArrayUtils.sol";
 import "./SafeMath.sol";
 import "./StringUtils.sol";
 
-contract RASC_Item {
+contract RASC_Item is Ownable {
     using ArrayUtils for uint[];
     using ArrayUtils for address[];
     using ArrayUtils for string[];
@@ -30,7 +30,6 @@ contract RASC_Item {
     event CategoryAdded(uint itemIndex, uint categoryIndex, string category);
     event SubcategoryAdded(uint itemIndex, uint categoryIndex, uint subcategoryIndex, string subcategory);
     event CategoriesAndSubcategoriesDeleted(uint itemIndex);
-    event AddedItemPurchaseToUser(uint itemIndex, address user, uint[] categories, uint[] subcategories);
     event ItemWasDeleted(uint itemIndex);
     event ItemPriceUpdated(uint itemIndex, uint price);
     //basic data item
@@ -55,9 +54,6 @@ contract RASC_Item {
     mapping (uint => mapping(uint => string[])) private itemsSubcategories;
 
     mapping (address => uint[]) usersItems;
-
-    mapping (address => uint[]) usersItemsPurchase;
-    mapping (address => mapping (uint => mapping(uint => uint[]))) purchaseSubcategories;
 
 
     function createItem(
@@ -145,85 +141,85 @@ contract RASC_Item {
         return price;
     }
     
-    function addItemPurchaseToUser(uint itemIndex, address user, uint[] memory categories, uint[] memory subcategories) internal {
-        require(categories.length == subcategories.length);
-        if (usersItemsPurchase[user].contains(itemIndex) == false) {
-            usersItemsPurchase[user].push(itemIndex);
-        }
-        for (uint i = 0; i < categories.length; i++) {
-            if (purchaseSubcategories[user][itemIndex][categories[i]].contains(subcategories[i]) == false) {
-                purchaseSubcategories[user][itemIndex][categories[i]].push(subcategories[i]);
-            }
-        }
-        emit AddedItemPurchaseToUser(itemIndex, user, categories, subcategories);
-    }
+    // function addItemPurchaseToUser(uint itemIndex, address user, uint[] memory categories, uint[] memory subcategories) internal {
+    //     require(categories.length == subcategories.length);
+    //     if (usersItemsPurchase[user].contains(itemIndex) == false) {
+    //         usersItemsPurchase[user].push(itemIndex);
+    //     }
+    //     for (uint i = 0; i < categories.length; i++) {
+    //         if (purchaseSubcategories[user][itemIndex][categories[i]].contains(subcategories[i]) == false) {
+    //             purchaseSubcategories[user][itemIndex][categories[i]].push(subcategories[i]);
+    //         }
+    //     }
+    //     emit AddedItemPurchaseToUser(itemIndex, user, categories, subcategories);
+    // }
     
     function getItemsCount() public view returns(uint count) {
         count = items.length;
     }
-    function getItemInfo(uint index) public view returns(
-        // string memory title,
-        // string memory description,
-        // string memory author, 
-        string memory data,
-        uint price, 
-        address seller, 
-        uint categoriesCount,
-        // uint rating,
-        // string memory tags,
-        uint[] memory subcategoriesCount,
-        uint[] memory purchasedCategories,
-        uint[] memory purchasedSubcategories
-        ) {
-        require(items.length > index);
-        Item memory item = items[index];
-        data = "";
-        // title = item.title;
-        // description = item.description;
-        // author = item.author;
-        // rating = item.rating;
-        // tags = item.tags;
-        price = item.price;
-        seller = item.seller;
-        categoriesCount = itemsCategories[index].length;
-        subcategoriesCount = new uint[](categoriesCount);
-        for (uint i = 0; i < categoriesCount; i++) {
-            subcategoriesCount[i] = itemsSubcategories[index][i].length;
-        }
-        if (usersItemsPurchase[msg.sender].contains(index) == true) {
-            data = item.data;
-            (purchasedSubcategories, purchasedCategories) = getItemPusrchaseSubcategories(msg.sender, index);
-        }
-    }
+    // function getItemInfo(uint index) public view returns(
+    //     // string memory title,
+    //     // string memory description,
+    //     // string memory author, 
+    //     string memory data,
+    //     uint price, 
+    //     address seller, 
+    //     uint categoriesCount,
+    //     // uint rating,
+    //     // string memory tags,
+    //     uint[] memory subcategoriesCount,
+    //     uint[] memory purchasedCategories,
+    //     uint[] memory purchasedSubcategories
+    //     ) {
+    //     require(items.length > index);
+    //     Item memory item = items[index];
+    //     data = "";
+    //     // title = item.title;
+    //     // description = item.description;
+    //     // author = item.author;
+    //     // rating = item.rating;
+    //     // tags = item.tags;
+    //     price = item.price;
+    //     seller = item.seller;
+    //     categoriesCount = itemsCategories[index].length;
+    //     subcategoriesCount = new uint[](categoriesCount);
+    //     for (uint i = 0; i < categoriesCount; i++) {
+    //         subcategoriesCount[i] = itemsSubcategories[index][i].length;
+    //     }
+    //     if (usersItemsPurchase[msg.sender].contains(index) == true) {
+    //         data = item.data;
+    //         (purchasedSubcategories, purchasedCategories) = getItemPusrchaseSubcategories(msg.sender, index);
+    //     }
+    // }
 
-    function getItemPusrchaseSubcategoriesCount(address user, uint index) internal view returns(uint count) {
-        uint categoriesCount = itemsCategories[index].length;
-        count = 0;
-        for (uint i = 0; i < categoriesCount; i++) {
-            count += purchaseSubcategories[user][index][i].length;
-        }
-    }
+    // function getItemPusrchaseSubcategoriesCount(address user, uint index) internal view returns(uint count) {
+    //     uint categoriesCount = itemsCategories[index].length;
+    //     count = 0;
+    //     for (uint i = 0; i < categoriesCount; i++) {
+    //         count += purchaseSubcategories[user][index][i].length;
+    //     }
+    // }
 
-    function getItemPusrchaseSubcategories(
-        address user, 
-        uint index) 
-        internal view returns(
-            uint[] memory subcategories, 
-            uint[] memory categories) {
-        uint categoriesCount = itemsCategories[index].length;
-        uint count = getItemPusrchaseSubcategoriesCount(user, index);
-        subcategories = new uint[](count);
-        categories = new uint[](count);
-        uint key = 0;
-        for (uint i = 0; i < categoriesCount; i++) {
-            uint subCount = purchaseSubcategories[user][index][i].length;
-            for (uint j = 0; j < subCount; j++) {
-                subcategories[key] = purchaseSubcategories[user][index][i][j];
-                categories[key] = i;
-                key++;
-            }
-        }
-    }
+    // function getItemPusrchaseSubcategories(
+    //     address user, 
+    //     uint index) 
+    //     internal view returns(
+    //         uint[] memory subcategories, 
+    //         uint[] memory categories) {
+    //     uint categoriesCount = itemsCategories[index].length;
+    //     uint count = getItemPusrchaseSubcategoriesCount(user, index);
+    //     subcategories = new uint[](count);
+    //     categories = new uint[](count);
+    //     uint key = 0;
+    //     for (uint i = 0; i < categoriesCount; i++) {
+    //         uint subCount = purchaseSubcategories[user][index][i].length;
+    //         for (uint j = 0; j < subCount; j++) {
+    //             subcategories[key] = purchaseSubcategories[user][index][i][j];
+    //             categories[key] = i;
+    //             key++;
+    //         }
+    //     }
+    // }
 
     function getItemCategoriesCount(uint index) public view returns(uint count) {
         count = itemsCategories[index].length;
