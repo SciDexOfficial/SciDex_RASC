@@ -1,8 +1,20 @@
 pragma solidity ^0.4.23;
 
+import "./Ownable.sol";
 import "./RASC_Item.sol";
+import "./StringUtils.sol";
 
-contract RASC_Transaction is RASC_Item {
+contract RASC_Transaction is Ownable {
+    
+    using ArrayUtils for uint[];
+    using ArrayUtils for address[];
+    using ArrayUtils for string[];
+    
+    using StringUtils for string;
+
+    address internal itemsContractAddress;
+
+
     enum TransactionStatus {created, canceled, confirmed}
     //events
     event AddedItemPurchaseToUser(uint itemIndex, address user, uint[] categories, uint[] subcategories);
@@ -49,7 +61,11 @@ contract RASC_Transaction is RASC_Item {
         require(transaction.arbiter == msg.sender);
         _;
     }
-    
+    function setitemsContractAddress(address itemContract) public onlyOwner {
+        require(itemContract != address(0));
+        require(itemContract != itemsContractAddress);
+        itemsContractAddress = itemContract;
+    }
     function createTransaction(
         address buyer, 
         address arbiter, 
@@ -59,8 +75,8 @@ contract RASC_Transaction is RASC_Item {
         uint[] memory categories, 
         uint[] memory subcategories) internal returns(uint) 
         {
-        Item memory item = getItemObject(itemIndex);
-        address seller = item.seller;
+        // Item memory item = getItemObject(itemIndex);
+        address seller = RASC_Item(itemsContractAddress).getItemSeller(itemIndex);//item.seller;
         require(categories.length == subcategories.length);
         require(buyer != address(0));
         require(seller != address(0));
@@ -119,7 +135,8 @@ contract RASC_Transaction is RASC_Item {
     function getTransactionSubcategoriesCount(uint transactionIndex) private view returns(uint categoriesCount, uint count) {
         count = 0;
         Transaction memory transaction = transactions[transactionIndex];
-        categoriesCount = getItemCategoriesCount(transaction.itemIndex);//itemsCategories[transaction.itemIndex].length;
+        categoriesCount = RASC_Item(itemsContractAddress).getItemCategoriesCount(transaction.itemIndex);
+        //itemsCategories[transaction.itemIndex].length;
         for (uint i = 0; i < categoriesCount; i++) {
             count += transactionsCategories[transactionIndex][i].length;
         }

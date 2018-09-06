@@ -5,10 +5,11 @@ import "./RASC_User.sol";
 import "./RASC_Transaction.sol"; 
 
 contract RASC_Store is RASC_Transaction {
+    
     using SafeMath for uint;
     using ArrayUtils for uint[];
-    
-    address userContractAddress;
+
+    address internal userContractAddress;
     
     event ItemBought(uint itemIndex, uint transactionIndex, uint[] categories, uint[] subcategories);
 
@@ -19,7 +20,7 @@ contract RASC_Store is RASC_Transaction {
     function buyItem(uint itemIndex, uint[] memory categories, uint[] memory subcategories) payable public {
         require(canBuyCategoriesAndSubcategories(itemIndex, msg.sender, categories, subcategories));
         //create transaction
-        uint price = getItemPrice(itemIndex, categories, subcategories);
+        uint price = RASC_Item(itemsContractAddress).getItemPrice(itemIndex, categories, subcategories);
         // require(msg.value >= price);
         
         uint transactionIndex = createTransaction(
@@ -43,7 +44,7 @@ contract RASC_Store is RASC_Transaction {
         uint[] memory prices) 
         {
         require(count > 0);
-        uint itemsCount = getItemsCount();
+        uint itemsCount = RASC_Item(itemsContractAddress).getItemsCount();
         require(from < itemsCount);
         uint to = from + count;
         uint correctCount = count;
@@ -58,21 +59,21 @@ contract RASC_Store is RASC_Transaction {
         uint i = 0;
         uint index = from;
         while (i < to - from) {
-            Item memory item = getItemObject(index);//items[index];
-            if (item.isDeleted == true) {
+            // Item memory item = getItemObject(index);//items[index];
+            if (RASC_Item(itemsContractAddress).getItemIsDeleted(index) == true) {//(item.isDeleted == true) {
                 index++;
                 continue;
             }
-            if (item.isPublic == false) {
+            if (RASC_Item(itemsContractAddress).getItemIsPublic(index)) {//(item.isPublic == false) {
                 //TODO: check if user has access to item
-                prices[i] = item.price;
-                sellers[i] = item.seller;
+                prices[i] = RASC_Item(itemsContractAddress).getItemPrice(index);//item.price;
+                sellers[i] = RASC_Item(itemsContractAddress).getItemSeller(index);//item.seller;
                 indexies[i] = index;
                 index++;
                 i++;
             } else {
-                prices[i] = item.price;
-                sellers[i] = item.seller;
+                prices[i] = RASC_Item(itemsContractAddress).getItemPrice(index);//item.price;
+                sellers[i] = RASC_Item(itemsContractAddress).getItemSeller(index);//item.seller;
                 indexies[i] = index;
                 index++;
                 i++;
@@ -88,7 +89,7 @@ contract RASC_Store is RASC_Transaction {
     }
 
     function getCreatedItems() public view returns(uint[] memory result) {
-        result = usersItems[msg.sender];
+        result = RASC_Item(itemsContractAddress).getUsersItems(msg.sender);//usersItems[msg.sender];
     }
 
     function canBuyCategoriesAndSubcategories(
@@ -119,28 +120,28 @@ contract RASC_Store is RASC_Transaction {
         uint[] memory purchasedCategories,
         uint[] memory purchasedSubcategories
         ) {
-        Item memory item = getItemObject(index);
+        // Item memory item = getItemObject(index);
         data = "";
         // title = item.title;
         // description = item.description;
         // author = item.author;
         // rating = item.rating;
         // tags = item.tags;
-        price = item.price;
-        seller = item.seller;
-        categoriesCount = getItemCategoriesCount(index);//itemsCategories[index].length;
+        price = RASC_Item(itemsContractAddress).getItemPrice(index);//item.price;
+        seller = RASC_Item(itemsContractAddress).getItemSeller(index);//item.seller;
+        categoriesCount = RASC_Item(itemsContractAddress).getItemCategoriesCount(index);//itemsCategories[index].length;
         subcategoriesCount = new uint[](categoriesCount);
         for (uint i = 0; i < categoriesCount; i++) {
-            subcategoriesCount[i] = getItemSubcategoriesCount(index, i);//itemsSubcategories[index][i].length;
+            subcategoriesCount[i] = RASC_Item(itemsContractAddress).getItemSubcategoriesCount(index, i);//itemsSubcategories[index][i].length;
         }
         if (usersItemsPurchase[msg.sender].contains(index) == true) {
-            data = item.data;
+            data = RASC_Item(itemsContractAddress).getItemData(index);//item.data;
             (purchasedSubcategories, purchasedCategories) = getItemPusrchaseSubcategories(msg.sender, index);
         }
     }
 
     function getItemPusrchaseSubcategoriesCount(address user, uint index) internal view returns(uint count) {
-        uint categoriesCount = getItemCategoriesCount(index);//itemsCategories[index].length;
+        uint categoriesCount = RASC_Item(itemsContractAddress).getItemCategoriesCount(index);//itemsCategories[index].length;
         count = 0;
         for (uint i = 0; i < categoriesCount; i++) {
             count += purchaseSubcategories[user][index][i].length;
@@ -153,7 +154,7 @@ contract RASC_Store is RASC_Transaction {
         internal view returns(
             uint[] memory subcategories, 
             uint[] memory categories) {
-        uint categoriesCount = getItemCategoriesCount(index);//itemsCategories[index].length;
+        uint categoriesCount = RASC_Item(itemsContractAddress).getItemCategoriesCount(index);//itemsCategories[index].length;
         uint count = getItemPusrchaseSubcategoriesCount(user, index);
         subcategories = new uint[](count);
         categories = new uint[](count);

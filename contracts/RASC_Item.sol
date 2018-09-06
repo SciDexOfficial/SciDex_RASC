@@ -6,13 +6,32 @@ import "./SafeMath.sol";
 import "./StringUtils.sol";
 
 contract RASC_Item is Ownable {
-    using ArrayUtils for uint[];
-    using ArrayUtils for address[];
+
+    address private adminAddress;
+
     using ArrayUtils for string[];
 
     using StringUtils for string;
 
     using SafeMath for uint;
+
+    modifier onlyAdmin() {
+        require(msg.sender == adminAddress);
+        _;
+    }
+
+    constructor() public {
+        adminAddress = msg.sender;
+    }
+
+    function setAdminAddress(address admin) public onlyOwner {
+        require(admin != address(0));
+        require(admin != adminAddress);
+        adminAddress = admin;
+    }
+    function getAdminAddress() public view onlyOwner returns(address) {
+        return adminAddress;
+    }
     //events
     event ItemCreated(
         uint itemIndex, 
@@ -118,7 +137,7 @@ contract RASC_Item is Ownable {
     function getItemPrice(
         uint itemIndex, 
         uint[] memory categories, 
-        uint[] memory subcategories) internal view returns(uint) 
+        uint[] memory subcategories) public view returns(uint) 
         {
         require(subcategories.length == categories.length);
         uint categoriesCount = itemsCategories[itemIndex].length;
@@ -237,7 +256,7 @@ contract RASC_Item is Ownable {
         subcategory = itemsSubcategories[index][categoryIndex][subcategoryIndex];
     }
 
-    function addItemCategoriesAndSubcategories(uint itemIndex, string memory categoriesAndSubcategories) internal {
+    function addItemCategoriesAndSubcategories(uint itemIndex, string memory categoriesAndSubcategories) private {
         string[] memory categories = categoriesAndSubcategories.split(";");
         for (uint i = 0; i < categories.length; i++) {
             string[] memory subcategories = categories[i].split(",");
@@ -253,5 +272,23 @@ contract RASC_Item is Ownable {
     }
     function getItemObject(uint index) internal view returns (Item memory item) {
         item = items[index];
+    }
+    function getItemSeller(uint index) public view onlyAdmin returns(address) {
+        return items[index].seller;
+    }
+    function getItemPrice(uint index) public view onlyAdmin returns(uint) {
+        return items[index].price;
+    }
+    function getItemData(uint index) public view onlyAdmin returns(string memory) {
+        return items[index].data;
+    }
+    function getItemIsDeleted(uint index) public view onlyAdmin returns(bool) {
+        return items[index].isDeleted;
+    }
+    function getItemIsPublic(uint index) public view onlyAdmin returns(bool) {
+        return items[index].isPublic;
+    }
+    function getUsersItems(address user) public view onlyAdmin returns(uint[] memory) {
+        return usersItems[user];
     }
 }

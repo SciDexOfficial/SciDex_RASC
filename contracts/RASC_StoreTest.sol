@@ -17,7 +17,7 @@ contract RASC_StoreTest is RASC_Store {
         uint itemIndex, 
         uint[] memory categories, 
         uint[] memory subcategories) public view returns(uint price) {
-        price = getItemPrice(itemIndex, categories, subcategories); 
+        price = RASC_Item(itemsContractAddress).getItemPrice(itemIndex, categories, subcategories); 
     }
     function getOwner() public view returns(address) {
         return owner;
