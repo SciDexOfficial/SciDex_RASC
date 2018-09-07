@@ -1,9 +1,9 @@
 const Store = artifacts.require("RASC_StoreTest")
 const Item = artifacts.require("RASC_Item")
 
-let addressUserContract = '0x2e61d70764ac3067835c7936617fba3a93cf26e0'
-let addressStoreContract = '0xc8e3bbdcca2062a4cd1c5041b75a171cf6c5ea67'
-let addressItemContract = '0xdb3122aea85f4a4d3ef7fedee4753d1f2af94aa9'
+let addressUserContract = '0x371f4e4f4649a15b18966167d2b941f4db3258d2'
+let addressStoreContract = '0x460746e16a1d6f97731131f57a2cb1ea1ce048e0'
+let addressItemContract = '0x27ccd3b2dd09491d9cb9b33c34da7e292ff1d3c7'
 
 contract("Local test for existing contracts", async (accounts) => {
     it("set admin address to the item contract", async() => {
